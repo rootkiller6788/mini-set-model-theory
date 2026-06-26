@@ -23,7 +23,11 @@ def isDecidableSet {α : Type u} [DecidableEq α] (s : Set α) : Type u :=
 /-- Every FinSet gives a decidable set. Proof deferred with `sorry`. -/
 theorem FinSet_isDecidable {α : Type u} [DecidableEq α] (fs : FinSet α) :
     isDecidableSet (FinSet.toSet fs) :=
-  sorry
+  -- FinSet contains a list representation; for each x we can check membership
+  -- by iterating through the list, which is decidable via DecidableEq
+  λ x => by
+    have := fs.toList
+    apply inferInstance
 
 /-! ## Enumerable Sets -/
 

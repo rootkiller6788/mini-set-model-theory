@@ -25,7 +25,12 @@ two FinSet representations; deferred with `sorry`.
 -/
 theorem finite_union_axiom {α : Type u} [DecidableEq α] (s t : Set α) :
     isFinite s → isFinite t → isFinite (union s t) :=
-  sorry
+  rcases hFinS with ⟨cs, hDecS, hMemS, hEqS⟩
+  rcases hFinT with ⟨ct, hDecT, hMemT, hEqT⟩
+  refine ⟨λ x => cs x ∨ ct x, λ x => ?_, ?_, ?_⟩
+  · apply Or.decidable
+  · intro h; rcases h with (hx | hx); exact hMemS hx; exact hMemT hx
+  · intro hx; rcases hx with (hx | hx); apply Or.inl; apply hEqS.2 hx; apply Or.inr; apply hEqT.2 hx
 
 /-! ## Finiteness Preserved by Intersection -/
 
@@ -35,7 +40,14 @@ The intersection of a finite set with any set is finite
 -/
 theorem finite_inter_axiom {α : Type u} [DecidableEq α] (s t : Set α) :
     isFinite s → isFinite (inter s t) :=
-  sorry
+  rcases hFinS with ⟨cs, hDecS, hMemS, hEqS⟩
+  -- intersection s ∩ t ⊆ s, and s is finite, so the intersection is finite
+  refine ⟨λ x => cs x ∧ t x, λ x => ?_, ?_, ?_⟩
+  · apply And.decidable
+  · intro ⟨hc, _⟩; exact hMemS hc
+  · intro hx; rcases hx with ⟨hx_s, hx_t⟩
+    have hc := hEqS.2 hx_s
+    exact ⟨hc, hx_t⟩
 
 /-! ## Countability Preserved -/
 
@@ -46,7 +58,17 @@ due to the complexity of the constructive enumeration argument.
 -/
 theorem countable_union {α : Type u} (s t : Set α) :
     isCountable s → isCountable t → isCountable (union s t) :=
-  sorry
+  rcases hCountS with ⟨fS, hSurjS⟩
+  rcases hCountT with ⟨fT, hSurjT⟩
+  -- Interleave enumerations: even indices for s, odd for t
+  let g : Nat → α := λ n => if n % 2 = 0 then fS (n / 2) else fT (n / 2)
+  refine ⟨g, ?_⟩
+  intro x hx
+  rcases hx with (hxS | hxT)
+  · rcases hSurjS x hxS with ⟨n, hn⟩
+    exact ⟨2*n, by simp [g, hn]⟩
+  · rcases hSurjT x hxT with ⟨n, hn⟩
+    exact ⟨2*n+1, by simp [g, hn]⟩
 
 /-! ## Nonempty Preserved -/
 

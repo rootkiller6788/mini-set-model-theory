@@ -65,7 +65,9 @@ theorem product_fst_image {α β : Type u} (s : Set α) (t : Set β) (_h : t ≠
   intro a; apply Iff.intro
   · intro h'; rcases h' with ⟨b, ⟨ha, _⟩⟩; exact ha
   · -- This direction requires t nonempty; deferred with sorry
-    sorry
+    -- t is nonempty by _h; pick any element to witness membership in productFst image
+    rcases _h with ⟨b, hb⟩
+    exact ⟨b, ⟨ha, hb⟩⟩
 
 /-! ## Examples -/
 

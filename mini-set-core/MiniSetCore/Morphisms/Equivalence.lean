@@ -36,7 +36,12 @@ theorem equipotent_symm {α β : Type u} (s : Set α) (t : Set β) :
   refine ⟨g, ?_⟩
   apply And.intro
   · -- g is injective because f is injective and g is f's inverse
-    sorry
+    -- g is the inverse of f: for any x, f(g(x)) = x
+    intro x y hg_eq
+    have : f (g x) = f (g y) := by rw [hg_eq]
+    rw [inverseIso_left f ⟨hf_inj, hf_surj⟩ x,
+        inverseIso_left f ⟨hf_inj, hf_surj⟩ y] at this
+    exact this
   · intro y; exact ⟨f y, inverseIso_left f ⟨hf_inj, hf_surj⟩ y⟩
 
 theorem equipotent_trans {α β γ : Type u} (s : Set α) (t : Set β) (u : Set γ) :
@@ -75,11 +80,14 @@ def CardinalEquivalence.refl (α : Type u) : CardinalEquivalence α α where
   bijection := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 
 def CardinalEquivalence.symm {α β : Type u} (ce : CardinalEquivalence α β) : CardinalEquivalence β α :=
-  sorry
+  { bijection := ⟨ce.bijection.2, ce.bijection.1, ce.bijection.4, ce.bijection.3⟩ }
 
 def CardinalEquivalence.trans {α β γ : Type u}
     (ce₁ : CardinalEquivalence α β) (ce₂ : CardinalEquivalence β γ) : CardinalEquivalence α γ :=
-  sorry
+  { bijection := ⟨ce2.bijection.1 ∘ ce1.bijection.1,
+      ce1.bijection.2 ∘ ce2.bijection.2,
+      λ x => by rw [Function.comp_apply, ce1.bijection.3, ce2.bijection.3],
+      λ x => by rw [Function.comp_apply, ce2.bijection.4, ce1.bijection.4]⟩ }
 
 /-! ## #eval Examples -/
 

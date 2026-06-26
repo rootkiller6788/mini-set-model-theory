@@ -201,7 +201,19 @@ surjectivity hypotheses to construct Φ = image f and Ψ = preimage f.
 theorem bijection_powerSet_bijection {α β : Type u} (f : α → β) :
     isBijective f → ∃ (Φ : Set α → Set β) (Ψ : Set β → Set α),
       (∀ s, Ψ (Φ s) = s) ∧ (∀ t, Φ (Ψ t) = t) :=
-  sorry
+  -- Φ = image f, Ψ = preimage f. For a bijection f, these are mutual inverses.
+  let Φ (s : Set α) : Set β := λ b => ∃ a, s a ∧ f a = b
+  let Ψ (t : Set β) : Set α := λ a => t (f a)
+  refine ⟨Φ, Ψ, ?_, ?_⟩
+  · intro s; funext a; constructor
+    · intro h; rcases h with ⟨a', ha', heq⟩
+      rcases h_biject with ⟨h_inj, _⟩
+      have : a' = a := h_inj heq; subst this; exact ha'
+    · intro ha; exact ⟨a, ha, rfl⟩
+  · intro t; funext b; constructor
+    · intro ⟨a, ha, heq⟩; subst heq; exact ha
+    · intro hb; rcases h_biject with ⟨_, h_surj⟩
+      rcases h_surj b with ⟨a, heq⟩; subst heq; exact ⟨a, hb, rfl⟩
 
 /-! ## Examples (type-checked) -/
 

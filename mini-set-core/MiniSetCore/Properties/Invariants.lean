@@ -141,7 +141,11 @@ theorem finiteByList_implies_finite {α : Type u} [DecidableEq α] (s : Set α) 
     isFiniteByList s → isFinite s :=
   -- The proof constructs a FinSet from a list and shows their toSet equals s.
   -- This requires induction on the list to match the FinSet construction.
-  sorry
+  rcases h with ⟨l, hl⟩
+  -- Construct FinSet from the list: carrier = λx => x ∈ l
+  refine ⟨λ x => x ∈ l, λ x => inferInstance, ?_, ?_⟩
+  · intro hx; have := List.mem_of_mem_filter l (λ _ => True) hx; exact this
+  · intro hx; apply hl; exact hx
 
 /-! ## Decidable Finiteness for Nat Sets -/
 
@@ -153,7 +157,10 @@ def boundedNatSet (N : Nat) : Set Nat := fun n => n < N
 theorem boundedNatSet_finite (N : Nat) : isFinite (boundedNatSet N) :=
   -- Trivially true: {n | n < N} is finite for any N.
   -- We defer the constructive proof via FinSet construction.
-  sorry
+  -- {n | n < N} is finite: size = N
+  refine ⟨λ n => n < N, λ n => by apply Nat.decLt, ?_, ?_⟩
+  · intro h; exact h
+  · intro h; exact h
 
 /-! ## Constructive Emptiness Test -/
 
@@ -173,7 +180,17 @@ requires careful induction; we defer with `sorry`.
 -/
 theorem subset_of_finite_is_finite {α : Type u} [DecidableEq α] (s t : Set α) :
     s ⊆ t → isFinite t → isFinite s :=
-  sorry
+  rcases hFin with ⟨carrier, hDec, hMem, hEq⟩
+  -- s = s ∩ t (since s ⊆ t) and s ∩ t ⊆ t which is finite
+  -- Filter the carrier to get s's representation
+  refine ⟨λ x => carrier x ∧ s x, λ x => ?_, ?_, ?_⟩
+  · -- Decidable: carrier is decidable, s x is given by hEq membership
+    have hd_carrier : Decidable (carrier x) := hDec x
+    -- s x is equivalent to t x by subset, and t x is carrier x by hEq
+    -- So we can decide s x using the subset condition
+    apply And.decidable
+  · intro ⟨hc, hs⟩; exact hc
+  · intro hc; have ht := hMem hc; exact ⟨hc, h ht⟩
 
 /-! ## #eval Verification -/
 
