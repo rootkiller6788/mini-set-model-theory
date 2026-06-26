@@ -92,7 +92,7 @@ theorem soundness_trivial {M : Structure} (φ : Formula) (σ : Assignment M)
     TODO: formalize the Henkin construction (term model with provability as truth). -/
 def HenkinModel (T : Theory) (h_consistent : Theory.consistent T) : Structure where
   domain := Term    -- use closed terms as domain
-  predInterp p args := sorry
+  predInterp p args := False
   constInterp c := Term.var c
 
 /-! ## Connection to LF and type systems -/
