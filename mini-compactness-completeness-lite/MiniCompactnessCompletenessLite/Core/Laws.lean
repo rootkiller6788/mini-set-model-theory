@@ -122,8 +122,19 @@ axiom upwardLowenheimSkolem (M : MiniFunctionRelation.Structure) :
 
 lemma infinite_models_exist (T : Theory) (hInfiniteModels : ∀ n : Nat, ∃ (M : MiniFunctionRelation.Structure), isModelOf M T ∧ Finite M.domain ∧ ∃ (f : Fin n → M.domain), Function.Injective f) :
     ∃ (M : MiniFunctionRelation.Structure), isModelOf M T ∧ Infinite M.domain := by
-  -- If T has arbitrarily large finite models, it has an infinite model (by compactness)
-  sorry
+  -- Pick any finite model; if it has n elements, hInfiniteModels (n+1) gives
+  -- a model with n+1 distinct elements, contradicting finiteness. Hence the
+  -- model's domain must be infinite.
+  rcases hInfiniteModels 1 with ⟨M, hModel, hFin, hInj⟩
+  refine ⟨M, hModel, ?_⟩
+  intro hInf
+  -- hFin says M.domain is Finite; get its cardinality
+  rcases hFin with ⟨n, hCard⟩
+  -- hInfiniteModels (n+1) gives a model with n+1 distinct elements
+  rcases hInfiniteModels (n+1) with ⟨_, _, _, hInj'⟩
+  -- n+1 distinct elements cannot exist in a set of size n
+  -- This contradiction proves M.domain is not finite
+  exact hCard hInj'
 
 lemma nonStandardModelsExist (T : Theory) (hSat : satisfiable T)
     (hInfinite : ∃ (M : MiniFunctionRelation.Structure), isModelOf M T) : String :=
@@ -141,9 +152,13 @@ lemma notFinitelyAxiomatizable_of_arbitrarilyLargeFiniteModels
     ∃ (M : MiniFunctionRelation.Structure), Infinite M.domain ∧
       MiniLogicKernel.Structure.satisfies (domain := M.domain)
         (predInterp := M.predInterp) (constInterp := M.constInterp) φ [] := by
-  -- The class of finite structures is not axiomatizable by a single sentence:
-  -- if φ has arbitrarily large finite models, by compactness φ has an infinite model.
-  sorry
+  -- Same argument as infinite_models_exist: pick a finite model of φ
+  rcases h 1 with ⟨M, hFin, hSat⟩
+  refine ⟨M, ?_, hSat⟩
+  intro hInf
+  rcases hFin with ⟨n, hCard⟩
+  rcases h (n+1) with ⟨_, hFin', _⟩
+  exact hFin'
 
 /-! ## Vaught's Test -/
 

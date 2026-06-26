@@ -150,10 +150,27 @@ def isPreservedUnderHomomorphism (φ : MiniLogicKernel.PredFormula) : Prop :=
 lemma positiveSentence_preserved_under_hom
     (φ : MiniLogicKernel.PredFormula) (hPos : isPositiveSentence φ) :
     isPreservedUnderHomomorphism φ := by
-  -- Positive sentences are preserved under homomorphisms (Lyndon's theorem).
-  -- The proof requires induction on formula structure, using the fact that
-  -- positive formulas (no ¬) are monotone under homomorphisms.
-  sorry
+  -- By induction on positive formula structure: atoms, ∧, ∨, ∀, ∃ are
+  -- preserved under homomorphisms; ¬ is absent from positive formulas.
+  -- We proceed by induction on φ.
+  induction φ with
+  | atom _ _ => exact λ h M N hHom hSat => hSat
+  | and φ ψ ihφ ihψ =>
+      intro hPos; have hp := hPos; rcases hp with ⟨hpφ, hpψ⟩
+      exact λ h M N hHom hSat => And.intro (ihφ hpφ h M N hHom hSat.1) (ihψ hpψ h M N hHom hSat.2)
+  | or φ ψ ihφ ihψ =>
+      intro hPos; have hp := hPos; rcases hp with (hpφ | hpψ)
+      · exact λ h M N hHom hSat => Or.inl (ihφ hpφ h M N hHom hSat)
+      · exact λ h M N hHom hSat => Or.inr (ihψ hpψ h M N hHom hSat)
+  | all _ φ ih =>
+      intro hPos; exact λ h M N hHom hSat x => ih hPos h M N hHom (hSat x)
+  | ex _ φ ih =>
+      intro hPos; exact λ h M N hHom hSat =>
+        let ⟨x, hx⟩ := hSat
+        ⟨x, ih hPos h M N hHom hx⟩
+  | not _ _ =>
+      -- Positive formulas do not contain negation
+      exact λ hPos => False.elim (hPos)
 
 /-! ## Submodel via Inclusion Hom -/
 
