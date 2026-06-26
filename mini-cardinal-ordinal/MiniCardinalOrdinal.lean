@@ -17,6 +17,8 @@ for first-order model theory.
 import MiniCardinalOrdinal.Core.Basic
 import MiniCardinalOrdinal.Core.Objects
 import MiniCardinalOrdinal.Core.Laws
+import MiniCardinalOrdinal.Core.CardinalTheory
+import MiniCardinalOrdinal.Core.OrdinalTheory
 import MiniCardinalOrdinal.Morphisms.Hom
 import MiniCardinalOrdinal.Morphisms.Iso
 import MiniCardinalOrdinal.Morphisms.Equivalence
@@ -31,8 +33,11 @@ import MiniCardinalOrdinal.Theorems.Basic
 import MiniCardinalOrdinal.Theorems.Stability
 import MiniCardinalOrdinal.Theorems.Categoricity
 import MiniCardinalOrdinal.Theorems.Main
+import MiniCardinalOrdinal.Theorems.ProofTechniques
+import MiniCardinalOrdinal.Theorems.AdvancedTopics
 import MiniCardinalOrdinal.Examples.Standard
 import MiniCardinalOrdinal.Examples.Counterexamples
+import MiniCardinalOrdinal.Examples.Applications
 import MiniCardinalOrdinal.Bridges.ToFunctionRelation
 import MiniCardinalOrdinal.Bridges.ToLogicKernel
 import MiniCardinalOrdinal.Bridges.ToCardinalArithmetic

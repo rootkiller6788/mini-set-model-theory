@@ -21,7 +21,6 @@ Consequences for elementary equivalence:
   (Ehrenfeucht-Fraisse games).
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- A set of sentences T is finitely satisfiable if every finite subset

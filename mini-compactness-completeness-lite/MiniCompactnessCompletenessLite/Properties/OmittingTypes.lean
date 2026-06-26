@@ -15,13 +15,20 @@ namespace MiniCompactnessCompletenessLite
 
 /-! ## Types -/
 
-def isType (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop := True
+def isType (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop :=
+  -- A type over T is a set of formulas consistent with T
+  isConsistent (T ∪ p)
 
-def isCompleteType (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop := True
+def isCompleteType (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop :=
+  isType p T ∧ (∀ φ, φ ∈ p ∨ (MiniLogicKernel.PredFormula.not φ) ∈ p)
 
-def isPrincipal (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop := True
+def isPrincipal (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop :=
+  -- A type is principal (isolated) if there is a formula φ ∈ p such that T ⊨ φ → ψ for all ψ ∈ p
+  ∃ (φ : MiniLogicKernel.PredFormula), φ ∈ p ∧
+    ∀ (ψ : MiniLogicKernel.PredFormula), ψ ∈ p → logicalConsequence T (MiniLogicKernel.PredFormula.impl φ ψ)
 
-def isIsolated (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop := True
+def isIsolated (p : Set MiniLogicKernel.PredFormula) (T : Theory) : Prop :=
+  isPrincipal p T
 
 /-! ## Omitting Types Theorem -/
 

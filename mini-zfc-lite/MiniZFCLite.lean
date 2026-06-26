@@ -42,3 +42,9 @@ import MiniZFCLite.Bridges.ToLogic.Basic
 import MiniZFCLite.Bridges.ToAlgebra.Basic
 import MiniZFCLite.Bridges.ToGeometry.Basic
 import MiniZFCLite.Bridges.ToTopology.Basic
+
+import MiniZFCLite.SetTheory.Ordinals
+import MiniZFCLite.SetTheory.HF
+import MiniZFCLite.SetTheory.Cardinals
+
+import MiniZFCLite.Proofs.Cantor

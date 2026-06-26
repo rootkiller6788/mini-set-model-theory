@@ -1,59 +1,83 @@
-import MiniFunctionRelation.Core.Basic
+﻿import MiniFunctionRelation.Core.Basic
+import MiniFunctionRelation.Core.Syntax
 import MiniFunctionRelation.Morphisms.Hom
-import MiniFunctionRelation.Morphisms.Iso
 
 namespace MiniFunctionRelation
 
 /-
-# Lowenheim-Skolem Theorems
+# Löwenheim-Skolem Theorems
 
-Every consistent first-order theory with an infinite model has models of
-every infinite cardinality. Every structure has an elementary substructure
-of any smaller infinite cardinality containing a given subset.
+Every consistent theory with an infinite model has models of every infinite cardinality.
+Every structure has an elementary substructure of any smaller infinite cardinality.
 -/
 
-def Structure.satisfies (M : Structure) (T : Set String) : Prop :=
-  ∀ (φ : String), φ ∈ T → True
+/-- The downward Löwenheim-Skolem theorem:
+    Every structure has a countable elementary substructure containing a given subset. -/
+def downwardLS (M : Structure) : Prop :=
+  ∃ (N : Structure),
+    Nonempty (ElementarySubstructure N M) ∧
+    ∃ (f : N.domain → Nat), Function.Injective f
 
--- Downward Lowenheim-Skolem: if T has a model, it has a countable model
-axiom downwardLS (T : Set String) (M : Structure)
-    (h : Structure.satisfies M T) :
-    ∃ (N : Structure),
-      Structure.satisfies N T
+/-- The upward Löwenheim-Skolem theorem:
+    If T has an infinite model, T has models of all larger cardinalities. -/
+def upwardLS (T : Theory) : Prop :=
+  (∃ (M : Structure), Structure.satisfiesTheory M T ∧ Infinite M.domain) →
+  ∀ (κ : Nat), ∃ (N : Structure), Structure.satisfiesTheory N T ∧ Infinite N.domain
 
--- Upward Lowenheim-Skolem: if T has an infinite model, it has arbitrarily large models
-axiom upwardLS (T : Set String) (M : Structure)
-    (h_infinite : Set.Infinite (Set.univ : Set M.domain))
-    (h : Structure.satisfies M T) :
-    ∃ (N : Structure),
-      Structure.satisfies N T
+/-- Tarski-Vaught test for elementary substructures:
+    M ≺ N iff for every formula φ(v, w̄) and all ā ∈ M,
+    if N ⊧ ∃v φ(v, ā) then there exists b ∈ M such that N ⊧ φ(b, ā). -/
+def tarskiVaughtCondition (M N : Structure) (e : Embedding M N) : Prop :=
+  ∀ (φ : Formula) (v : Nat) (σ : Assignment M),
+    N.satisfiesFormula (λ w => e.map (σ w)) (Formula.ex v φ) →
+    ∃ (b : M.domain),
+      N.satisfiesFormula ((λ w => e.map (σ w)).update v (e.map b)) φ
 
-def IsCountable (M : Structure) : Prop :=
-  ∃ (f : M.domain → Nat), Function.Injective f
+/-- LS for countable languages: every consistent theory has a countable model. -/
+def downwardLS_countable (T : Theory) [Set.Countable T] : Prop :=
+  Theory.consistent T →
+  ∃ (M : Structure), Structure.satisfiesTheory M T ∧
+    ∃ (f : M.domain → Nat), Function.Injective f
 
--- Every structure has a countable elementary substructure
-axiom countableElementarySubmodel (M : Structure) :
-    ∃ (N : Structure),
-      Nonempty (Hom N M) ∧ IsCountable N
+/-- The proof of downward LS uses the Tarski-Vaught test:
+    1. Start with a countable subset X ⊆ M
+    2. Close under Skolem functions: for each formula φ(v, w̄),
+       add a witness for ∃v φ(v, w̄) whenever the existential holds
+    3. Take the countable union; this is an elementary substructure -/
 
--- Tarski-Vaught test for elementary substructures
-axiom tarskiVaughtTest (M N : Structure) (f : Embedding M N) :
-    True
+/-- Skolem hull: the closure of a set under definable Skolem functions. -/
+def skolemHull (M : Structure) (X : Set M.domain) : Set M.domain :=
+  -- This would be the countable union of X, f₁(X), f₂(X), ...
+  -- where each f_φ is a Skolem function for formula φ
+  X
 
--- Concrete examples
-def TrivStruct : Structure where
-  domain := Unit
-  predInterp _ _ := False
-  constInterp _ := ()
+/-- Concrete example: (ℚ, <) as a countable elementary substructure of (ℝ, <).
+    Both are dense linear orders without endpoints. -/
+def ratOrder : Structure where
+  domain := Rat
+  predInterp p args := match p, args with
+    | 0, [x, y] => x < y
+    | _, _ => False
+  constInterp _ := 0
 
-theorem triv_countable : IsCountable TrivStruct := by
-  refine ⟨λ _ => 0, ?_⟩
-  intro x y h
-  cases x; cases y; rfl
+/-- Cantor's theorem: any countable DLO is isomorphic to (ℚ, <).
+    This gives the "downward LS" for DLO: every model of DLO has
+    a countable elementary substructure isomorphic to (ℚ, <). -/
+def cantorTheorem : Prop :=
+  ∀ (M : Structure),
+    (∃ (order : M.domain → M.domain → Prop),
+      (∀ x, ¬ order x x) ∧
+      (∀ x y z, order x y → order y z → order x z) ∧
+      (∀ x y, order x y ∨ x = y ∨ order y x) ∧
+      (∀ x y, order x y → ∃ z, order x z ∧ order z y) ∧
+      (∀ x, ∃ y, order y x) ∧
+      (∀ x, ∃ y, order x y)) →
+    (∃ (f : M.domain → Nat), Function.Injective f) →
+    Nonempty (Iso M ratOrder)
 
--- eval examples
-#eval "Downward Lowenheim-Skolem (axiom)"
-#eval "Upward Lowenheim-Skolem (axiom)"
-#eval "Trivial structure is countable: Unit → Nat injection"
+#eval "LowenheimSkolem.lean loaded"
+#eval "  downwardLS, upwardLS, tarskiVaughtCondition"
+#eval "  ratOrder (ℚ, <)"
+#eval "  Cantor's theorem for DLO"
 
 end MiniFunctionRelation

@@ -35,8 +35,11 @@ def IsDLO (T : Type) (lt : T → T → Prop) : Prop :=
 -- Rational numbers as dense linear order
 def RatDLO : Structure := DLOStructure ℚ (0 : ℚ) (· < ·)
 
--- Any two countable dense linear orders without endpoints are isomorphic
-axiom cantorDLO :
+-- Cantor's theorem: any two countable dense linear orders without endpoints
+-- are isomorphic. This is a classic result proved by back-and-forth.
+-- We state it as a documented property; the full proof requires a
+-- back-and-forth construction (available in the Fraïssé limit framework).
+def cantorTheorem : Prop :=
   ∀ (T1 T2 : Type) (d1 : T1) (d2 : T2) (lt1 : T1 → T1 → Prop) (lt2 : T2 → T2 → Prop),
     IsDLO T1 lt1 → IsDLO T2 lt2 →
     (∃ (f : T1 → Nat), Function.Injective f) →

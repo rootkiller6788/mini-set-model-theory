@@ -24,7 +24,6 @@ Examples:
   elementarily equivalent.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- A finite linear order of size n: domain = Fin (max n 1),

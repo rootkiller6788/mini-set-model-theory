@@ -16,7 +16,6 @@ relation. Interpretation elimination and the relationship between
 a structure and its quotient under elementary equivalence.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- A definable equivalence relation on a structure M is an equivalence
@@ -44,7 +43,7 @@ def quotientMap (M : Structure) (E : DefinableEquivalence M) :
 
 /-- The quotient map is a homomorphism. -/
 def quotientHom (M : Structure) (E : DefinableEquivalence M) :
-    MiniFunctionRelation.Hom M (quotientStructure M E) where
+    Hom M (quotientStructure M E) where
   map := quotientMap M E
   preservesPred p args h := by
     refine ⟨args, ?_, h⟩

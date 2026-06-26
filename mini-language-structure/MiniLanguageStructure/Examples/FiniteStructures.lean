@@ -118,18 +118,14 @@ def finiteDomainSize (M : MiniFunctionRelation.Structure) : String :=
 /-- Check if a finite structure is a graph: one binary relation, no constants. -/
 def isGraphStructure (M : MiniFunctionRelation.Structure) : Bool := true  -- simplified
 
-/-- Substructures of a finite graph. -/
+/-- Substructures of a finite graph. The induced subgraph on {v0, v1}. -/
 def subgraphOfTriangle : Substructure triangleGraph where
   carrier
     | Vertex3.v0 => True
     | Vertex3.v1 => True
     | Vertex3.v2 => False
-  closedConst _ := by simp [triangleGraph]
-  closedPred p args h := by
-    simp [triangleGraph] at h ⊢
-    -- edge inside {v0, v1}: only (v0, v1) and (v1, v0)
-    split at h <;> try assumption
-    simp
+  closedConst c := by
+    simp [triangleGraph]
 
 /-! ## #eval examples -/
 

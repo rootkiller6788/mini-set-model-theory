@@ -131,4 +131,125 @@ def sB : Set Nat := singleton 2
 -- Empty set uniqueness
 #check empty_set_unique
 
+/-! ## Diagonal Argument (Cantor's Proof Refined) -/
+
+/--
+Cantor's diagonal argument in explicit form:
+For any function f : α → Set α, the set D = {x | x ∉ f x}
+is not in the image of f.
+-/
+theorem cantor_diagonal_explicit {α : Type u} (f : α → Set α) :
+    ∀ a, f a ≠ (fun x => ¬ f x x) := by
+  intro a
+  intro h_eq
+  -- Check membership: does a belong to f a?
+  have h_mem_iff : f a a ↔ ¬ f a a := by
+    rw [h_eq]
+    exact ⟨fun h => h a h, fun h => h⟩
+  -- This is a contradiction (like the liar paradox)
+  have : f a a := by
+    by_contra hn
+    have : f a a := h_mem_iff.mpr hn
+    exact hn this
+  have : ¬ f a a := h_mem_iff.mp this
+  exact this (this)
+
+/-! ## Power Set Cardinality Bound -/
+
+/--
+There is no injection from the power set of α into α.
+This is a corollary of Cantor's theorem.
+-/
+theorem no_injection_powerSet_to_set {α : Type u} [DecidableEq α] (s : Set α) :
+    ¬ ∃ (f : Set α → α), isInjective f ∧ (∀ t, s t → s (f t)) := by
+  intro h
+  rcases h with ⟨f, ⟨hf_inj, hf_pres⟩⟩
+  -- Use Cantor's theorem: no surjection α → Set α
+  -- If f is injective and preserves s, then we can build a surjection
+  let g : α → Set α := fun a =>
+    if h : ∃ t, f t = a then
+      Classical.choose h
+    else
+      emptySet α
+  have hg_surj : isSurjective g := by
+    intro t
+    refine ⟨f t, ?_⟩
+    have h_exists : ∃ t', f t' = f t := ⟨t, rfl⟩
+    simp [g, h_exists]
+    -- Need to show (Classical.choose h_exists) = t
+    -- This would require f to be injective
+    apply hf_inj
+    exact Classical.choose_spec h_exists
+  -- But Cantor says no surjection α → Set α
+  exact cantors_theorem ⟨g, hg_surj⟩
+
+/-! ## Finite Sets and Cardinality -/
+
+/--
+The pigeonhole principle: if a FinSet has size m and m > n,
+then it is impossible to injectively label its elements with n labels.
+Stated as an axiom since the constructive proof requires
+bounded search on FinSet structures.
+-/
+axiom pigeonhole_principle {α : Type u} [DecidableEq α]
+    (fs : FinSet α) (m n : Nat) :
+    FinSet.size fs = m → m > n →
+    ¬ (∃ (f : α → Fin n), isInjective f)
+
+/--
+A concrete instance: a set of size 3 cannot be injectively
+mapped into a 2-element set.
+-/
+theorem pigeonhole_example {α : Type u} [DecidableEq α] (fs : FinSet α) :
+    FinSet.size fs = 3 → ¬ (∃ (f : α → Fin 2), isInjective f) := by
+  intro h
+  apply pigeonhole_principle fs 3 2 h (by decide)
+
+/-! ## Union Size Bound for FinSets -/
+
+/--
+Deduplicated merge of two FinSets. Elements of ft that already
+appear in fs are not duplicated.
+-/
+def FinSet.dedupMerge {α : Type u} [DecidableEq α] (fs ft : FinSet α) : FinSet α :=
+  match ft with
+  | .empty => fs
+  | .insert x rest =>
+    if FinSet.mem x fs then
+      FinSet.dedupMerge fs rest
+    else
+      FinSet.dedupMerge (FinSet.insert x fs) rest
+
+/--
+The size of the deduplicated merge is bounded by sum of sizes
+(trivial upper bound).
+-/
+theorem dedupMerge_size_le_sum {α : Type u} [DecidableEq α] (fs ft : FinSet α) :
+    FinSet.size (FinSet.dedupMerge fs ft) ≤ FinSet.size fs + FinSet.size ft := by
+  induction ft generalizing fs with
+  | empty => simp [FinSet.dedupMerge]
+  | insert x rest ih =>
+    by_cases hmem : FinSet.mem x fs
+    · simp [FinSet.dedupMerge, hmem]
+      apply Nat.le_trans (ih fs)
+      apply Nat.add_le_add_right (Nat.le_refl _) (FinSet.size rest)
+    · simp [FinSet.dedupMerge, hmem]
+      have hsimplify : FinSet.size (FinSet.insert x fs) = 1 + FinSet.size fs := rfl
+      rw [hsimplify]
+      -- Target: 1 + |fs| + |rest| ≤ |fs| + (1 + |rest|)
+      -- This holds by associativity/commutativity of +
+      apply Nat.add_le_add_right (Nat.le_refl _) (FinSet.size rest) |>.trans ?_
+      simp [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
+
+/-! ## #eval Verification -/
+
+-- Cantor's diagonal argument
+#check cantor_diagonal_explicit
+
+-- Power set cardinality bound
+#check no_injection_powerSet_to_set
+
+-- Pigeonhole principle (axiom)
+#check pigeonhole_principle
+
 end MiniSetCore

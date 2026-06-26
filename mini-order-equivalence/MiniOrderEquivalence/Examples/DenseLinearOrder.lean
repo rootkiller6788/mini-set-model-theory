@@ -22,7 +22,6 @@ Consequences:
 - DLO has quantifier elimination.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- The axioms of dense linear orders without endpoints.
@@ -64,9 +63,9 @@ def RationalOrder : Structure where
     (they have no density and have endpoints properties). -/
 def IntegerOrder : Structure := IntStructure
 
-/-- A finite linear order of size n is a model of DLO restricted to
-    that finite set (trivially false for the density axiom). -/
-def FiniteOrderDLO (n : Nat) : Structure := finiteLinearOrder n
+/-- A finite linear order of size n is NOT a model of DLO
+    (density fails in any finite order). It serves as a counterexample. -/
+def FiniteOrderDLO (n : Nat) : Structure := FinOrderStructure n
 
 /-- DLO is complete: for every sentence φ, either DLO ⊨ φ or DLO ⊨ ¬φ. -/
 theorem dloComplete : isCompleteTheory DLO := by

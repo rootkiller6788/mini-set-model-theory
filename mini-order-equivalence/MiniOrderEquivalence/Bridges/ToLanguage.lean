@@ -16,7 +16,6 @@ Elementary equivalence and formal languages:
 - Connections to automata theory via definable sets.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- The language of a structure M is the set of formulas true in M.

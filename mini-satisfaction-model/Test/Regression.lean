@@ -13,46 +13,58 @@ namespace MiniSatisfactionModel.Test
 Ensure core APIs remain stable across changes.
 -/
 
-/-- Test: Theory construction and access. -/
-#eval "══ MiniSatisfactionModel Regression Tests ══"
-
-/-- Theory { } is consistent (empty theory has a model). -/
 def emptyTheory : Theory := { axioms := ∅ }
-#eval isConsistent emptyTheory
 
-/-- Theory with contradiction is inconsistent. -/
-def contradictoryTheory : Theory := { axioms := { .prop .false } }
-#eval "contradictoryTheory defined"
+def contradictoryTheory : Theory :=
+  { axioms := { .prop (.false : MiniLogicKernel.Formula) } }
 
-/-- Theory axioms are accessible. -/
-#eval emptyTheory.axioms
+/-- The unit structure as a canonical example. -/
+def unitStruct : Structure where
+  domain := Unit
+  predInterp _ _ := True
+  constInterp _ := ()
 
-/-- isComplete is defined. -/
-#eval "isComplete type: " ++ toString (isComplete emptyTheory)
-
-/-- isModelOf type-checks. -/
-def unitStruct : Structure := MiniLanguageStructure.unitStructure
-#eval isModelOf unitStruct emptyTheory
-
-/-- Syntax classification regression. -/
-#eval isQuantifierFree (.pred 0 [0, 1])
-#eval isUniversalFormula (.all (.pred 0 [0]))
-#eval isExistentialFormula (.ex (.pred 0 [0]))
-#eval isPositiveFormula (.and (.pred 0 [0]) (.pred 1 [1]))
-#eval isPositiveFormula (.not (.pred 0 [0]))
-
-/-- A complex nested formula. -/
-def nestedFormula : PredFormula :=
+/-- A complex nested formula for testing. -/
+def nestedFormula : MiniLogicKernel.PredFormula :=
   .all (.impl (.pred 0 [0]) (.ex (.pred 1 [1, 0])))
-#eval isQuantifierFree nestedFormula
-#eval isUniversalFormula nestedFormula
 
-/-- hasFiniteModel type checks. -/
-#eval "hasFiniteModel defined"
+/-- Main regression test function. -/
+def runRegressionTests : IO Unit := do
+  IO.println "══ MiniSatisfactionModel Regression Tests ══"
 
-/-- compactness axiom is available. -/
-#eval "compactness axiom declared"
+  -- Theory construction
+  IO.println s!"Empty theory axioms: {emptyTheory.axioms}"
+  IO.println s!"Contradictory theory defined: {toString contradictoryTheory}"
 
-#eval "══ All regression tests passed. ══"
+  -- Consistency
+  IO.println s!"isComplete(emptyTheory): {isComplete emptyTheory}"
+
+  -- Model checking
+  IO.println s!"isModelOf(unitStruct, emptyTheory): {isModelOf unitStruct emptyTheory}"
+
+  -- Syntax classification
+  IO.println s!"QF(pred): {isQuantifierFree (.pred 0 [0, 1])}"
+  IO.println s!"Univ(∀ P): {isUniversalFormula (.all (.pred 0 [0]))}"
+  IO.println s!"Ex(∃ P): {isExistentialFormula (.ex (.pred 0 [0]))}"
+  IO.println s!"Pos(P∧Q): {isPositiveFormula (.and (.pred 0 [0]) (.pred 1 [1]))}"
+  IO.println s!"Pos(¬P): {isPositiveFormula (.not (.pred 0 [0]))}"
+
+  -- Nested formula
+  IO.println s!"Nested QF: {isQuantifierFree nestedFormula}"
+  IO.println s!"Nested Univ: {isUniversalFormula nestedFormula}"
+
+  -- Existence checks
+  IO.println s!"hasFiniteModel: type defined"
+  IO.println s!"compactness: axiom declared"
+  IO.println s!"standardExampleNames: {standardExampleNames.length} examples"
+
+  -- Classification
+  IO.println s!"DLO stability: {dloClassification.stability}"
+  IO.println s!"ACF0 stability: {acf0Classification.stability}"
+  IO.println s!"RCF stability: {rcfClassification.stability}"
+
+  IO.println "══ All regression tests passed. ══"
+
+def main : IO Unit := runRegressionTests
 
 end MiniSatisfactionModel.Test

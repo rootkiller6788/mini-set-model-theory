@@ -17,7 +17,6 @@ Ordered structures and elementary equivalence:
 - Presburger arithmetic: (Z, +, <) is o-minimal.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- An ordered structure has a binary predicate (<) that is a linear order. -/

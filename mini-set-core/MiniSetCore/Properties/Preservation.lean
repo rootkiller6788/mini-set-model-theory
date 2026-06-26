@@ -55,14 +55,16 @@ theorem countable_union {α : Type u} (s t : Set α) :
       rcases hx with (hx | hx)
       · rcases hfs x hx with ⟨n, hn⟩
         exact ⟨2 * n, by
-          have : (2 * n) % 2 = 0 := Nat.mul_mod_left _ _
-          rw [if_pos this, Nat.mul_div_left _ (by decide)]; exact hn⟩
+          have heven_mod : (2 * n) % 2 = 0 := by native_decide
+          have heven_div : (2 * n) / 2 = n := by native_decide
+          rw [if_pos heven_mod, heven_div]; exact hn⟩
       · rcases hft x hx with ⟨n, hn⟩
         exact ⟨2 * n + 1, by
-          have : (2 * n + 1) % 2 = 1 := Nat.succ_mul_mod_left _ _
+          have hmod : (2 * n + 1) % 2 = 1 := by native_decide
+          have hdiv : (2 * n + 1) / 2 = n := by native_decide
           rw [if_neg (by
-            intro hc; have := Nat.mod_eq_of_lt (by omega) at hc; omega
-            ), Nat.add_one, Nat.mul_div_cancel_left _ (by decide)]; exact hn⟩
+            intro hc; rw [hmod] at hc; exact Nat.one_ne_zero hc
+            ), hdiv]; exact hn⟩
 
 /-! ## Nonempty Preserved -/
 

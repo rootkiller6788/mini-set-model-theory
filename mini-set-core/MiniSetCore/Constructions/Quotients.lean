@@ -108,7 +108,7 @@ def mod2Equiv : EquivRel Nat (fun n => n < 6) where
 
 -- Projection example
 def smallSet : Set Nat := fun n => n < 6
-#eval quotientProjection mod2Equiv 3 (by trivial) 5
+#eval quotientProjection mod2Equiv 3 (by decide) 5
 
 -- Partition construction
 #check equivRelToPartition mod2Equiv

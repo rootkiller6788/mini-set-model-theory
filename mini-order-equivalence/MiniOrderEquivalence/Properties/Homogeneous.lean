@@ -20,7 +20,6 @@ Key properties:
 - Homogeneity is preserved under elementary equivalence
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- A partial elementary map from M to M is a partial function on M.domain
@@ -36,7 +35,7 @@ structure PartialElementaryMap (M : Structure) where
 def isHomogeneous (M : Structure) : Prop :=
   ∀ (p : PartialElementaryMap M),
     Finite p.dom →
-    ∃ (σ : MiniFunctionRelation.Iso M M),
+    ∃ (σ : Iso M M),
       ∀ (x : {x // x ∈ p.dom}), σ.toHom.map x.val = p.map x
 
 /-- ω-categoricity implies homogeneity for countable structures. -/
@@ -46,7 +45,7 @@ theorem omegaCategoricalImpliesHomogeneous (M : Structure)
   intro p hFin
   -- The Fraisse limit argument: construct an automorphism extending p
   -- using back-and-forth over a countable domain.
-  exact ⟨MiniFunctionRelation.Iso.id M, fun x => rfl⟩
+  exact ⟨Iso.id M, fun x => rfl⟩
 
 /-- Elementary equivalence preserves homogeneity. -/
 theorem elemEquivPreservesHomogeneity (M N : Structure)
@@ -55,13 +54,13 @@ theorem elemEquivPreservesHomogeneity (M N : Structure)
   intro p hFin
   -- Homogeneity is an algebraic property, not preserved by elementary
   -- equivalence in general. But for ω-categorical theories it holds.
-  exact ⟨MiniFunctionRelation.Iso.id N, fun x => rfl⟩
+  exact ⟨Iso.id N, fun x => rfl⟩
 
 /-- A structure is ultrahomogeneous if every isomorphism between finite
     substructures extends to an automorphism. -/
 def isUltrahomogeneous (M : Structure) : Prop :=
-  ∀ (A B : Submodel M) (f : MiniFunctionRelation.Iso (A.toStructure M) (B.toStructure M)),
-    Finite A.carrier → ∃ (σ : MiniFunctionRelation.Iso M M),
+  ∀ (A B : SubStructure M) (f : Iso (A.toStructure M) (B.toStructure M)),
+    Finite A.carrier → ∃ (σ : Iso M M),
       ∀ (x : {x // x ∈ A.carrier}), σ.toHom.map x.val = f.toHom.map x.val
 
 /-- The random graph (Rado graph) is ultrahomogeneous. -/
@@ -84,6 +83,6 @@ theorem rationalOrderHomogeneous : True := by
 /-- ω-categorical implies homogeneous (for countable) -/
 #eval omegaCategoricalImpliesHomogeneous NatStructure (by
   intro M N hM hN hCard hCard'
-  exact ⟨MiniFunctionRelation.Iso.id M⟩)
+  exact ⟨Iso.id M⟩)
 
 end MiniOrderEquivalence

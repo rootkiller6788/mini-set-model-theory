@@ -19,7 +19,6 @@ Key results:
   uncountable cardinal, it is categorical in all uncountable cardinals.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- A theory T is κ-categorical if any two models of T of cardinality κ
@@ -29,7 +28,7 @@ def isCategoricalInPower (T : Set PredFormula) (κ : Nat) : Prop :=
     theoryOf M = T → theoryOf N = T →
     (∃ (fM : Fintype M.domain), @Fintype.card M.domain fM = κ) →
     (∃ (fN : Fintype N.domain), @Fintype.card N.domain fN = κ) →
-    Nonempty (MiniFunctionRelation.Iso M N)
+    Nonempty (Iso M N)
 
 /-- A theory is totally categorical if it is κ-categorical for every
     infinite κ. -/
@@ -63,7 +62,7 @@ theorem finiteSizeCategoricity (T : Set PredFormula) (n : Nat)
   rcases hCardN with ⟨fN, hn⟩
   -- Two finite structures with the same size and same theory are
   -- not necessarily isomorphic; we need additional finiteness conditions.
-  exact ⟨MiniFunctionRelation.Iso.id M⟩
+  exact ⟨Iso.id M⟩
 
 /-- Categoricity in power is preserved under elementary equivalence. -/
 theorem categoricityPreservedByElemEquiv (T T' : Set PredFormula) (κ : Nat)

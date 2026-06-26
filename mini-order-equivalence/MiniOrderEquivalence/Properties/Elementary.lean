@@ -19,7 +19,6 @@ Properties that are invariant under elementary equivalence:
 - Categoricity in power
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- A theory (set of sentences) is complete if for every sentence φ,
@@ -30,7 +29,7 @@ def isCompleteTheory (T : Set PredFormula) : Prop :=
 /-- A structure M is model-complete if every embedding of M into a model
     of theoryOf(M) is elementary. -/
 def isModelComplete (M : Structure) : Prop :=
-  ∀ (N : Structure) (e : MiniFunctionRelation.Hom M N),
+  ∀ (N : Structure) (e : Hom M N),
     (theoryOf M = theoryOf N) → True
 
 /-- A theory has quantifier elimination if every formula is equivalent

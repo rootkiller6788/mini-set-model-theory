@@ -11,8 +11,8 @@ open MiniCardinalOrdinal
 #eval "══ MINI-CARDINAL-ORDINAL REGRESSION TESTS ══"
 
 /-! ## Cardinal Arithmetic Consistency -/
-#eval Cardinal.eq (Cardinal.add Cardinal.alephZero Cardinal.alephOne) Cardinal.alephOne
-#eval Cardinal.eq (Cardinal.mul Cardinal.alephZero Cardinal.alephZero) Cardinal.alephZero
+#eval Cardinal.eqBool (Cardinal.add Cardinal.alephZero Cardinal.alephOne) Cardinal.alephOne
+#eval Cardinal.eqBool (Cardinal.mul Cardinal.alephZero Cardinal.alephZero) Cardinal.alephZero
 
 /-! ## StabilityClass Round-trip -/
 def allClasses : List StabilityClass := [

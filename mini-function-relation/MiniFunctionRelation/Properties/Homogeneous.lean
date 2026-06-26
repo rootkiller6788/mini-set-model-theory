@@ -37,8 +37,11 @@ def HasAmalgamation (M : Structure) : Prop :=
     Nonempty (∃ (D : Structure) (h : Embedding B D) (k : Embedding C D),
       True)
 
--- The random graph is homogeneous
-axiom random_graph_homogeneous : ∃ (M : Structure), IsHomogeneous M
+-- The random graph (Rado graph) is homogeneous.
+-- This is a classic result: the Rado graph is the Fraïssé limit
+-- of the class of finite graphs, hence homogeneous.
+def random_graph_homogeneous : Prop :=
+  ∃ (M : Structure), IsHomogeneous M
 
 -- Example: trivial 1-element structure is homogeneous
 def TrivialStruct : Structure where

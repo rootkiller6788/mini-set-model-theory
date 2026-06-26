@@ -42,7 +42,6 @@ def unitSnd : MiniFunctionRelation.Hom prodUnit unitStructure := productSnd unit
 def trivialSub : Substructure unitStructure where
   carrier _ := True
   closedConst _ := trivial
-  closedPred _ _ _ := trivial
 
 #eval "Substructure defined"
 

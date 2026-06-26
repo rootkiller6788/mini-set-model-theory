@@ -34,9 +34,6 @@ def singleVertexSub : Substructure twoVertexGraph where
     | TwoVertex.a => True
     | TwoVertex.b => False
   closedConst _ := trivial
-  closedPred _ _ h := by
-    -- No edge inside the substructure, so this is vacuously true
-    simp [twoVertexGraph] at h
 
 #eval "Single-vertex substructure defined"
 

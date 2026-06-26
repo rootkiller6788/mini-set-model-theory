@@ -1,24 +1,38 @@
 /-
 # Bridges: Satisfaction Model to Geometry
 
-Zariski geometry, definable sets as constructible sets,
-and model-theoretic algebraic geometry.
+Zariski geometry, definable sets as constructible sets, Hilbert's
+Nullstellensatz, and model-theoretic algebraic geometry. Covers L7, L8.
+
+## Knowledge Coverage
+- L7: Model theory ↔ Algebraic geometry (ACF, Zariski topology)
+- L8: Zariski geometries, geometric stability theory
+- L9: Motivic integration, valued fields
 -/
 
 import MiniSatisfactionModel.Properties.Classification
+import MiniSatisfactionModel.Core.Basic
 import MiniSatisfactionModel.Core.Laws
 
 namespace MiniSatisfactionModel
 
-/-! ## Hilbert's Nullstellensatz -/
+/-! ## Hilbert's Nullstellensatz (Model-Theoretic Form)
+
+In ACF, definable sets = constructible sets (finite Boolean combinations
+of Zariski closed sets). This is Chevalley's theorem, equivalent to QE
+in ACF. The Nullstellensatz follows: I(V(J)) = √J. -/
 
 def nullstellensatz : String :=
-  "Hilbert's Nullstellensatz: In ACF, definable sets correspond to constructible sets in the Zariski topology"
+  "In ACF, definable sets = constructible sets (Chevalley/Tarski). Hilbert's Nullstellensatz follows."
 
 def morleyRankIsKrullDimension : String :=
-  "In ACF0, Morley rank equals Krull dimension"
+  "In ACF₀, Morley rank = Krull dimension = transcendence degree"
 
-/-! ## Zariski Geometry -/
+/-! ## Zariski Geometry (Hrushovski-Zilber)
+
+A Zariski geometry is a Noetherian topological space where closed sets
+are given by algebraic equations. Hrushovski-Zilber proved:
+Zariski geometry + 1-dimensional → interpretable in ACF. -/
 
 structure ZariskiGeometry where
   carrier : Type
@@ -26,36 +40,53 @@ structure ZariskiGeometry where
   dimension : Set carrier → Nat
   deriving Repr
 
-def acfZariskiGeometry (char : Nat) : ZariskiGeometry where
+def zariskiGeometryExample : ZariskiGeometry where
   carrier := String
   closedSets := ∅
   dimension _ := 0
 
-/-! ## Definable Sets -/
+def hrushovskiZilberTheorem : String :=
+  "Hrushovski-Zilber: Every ample Zariski geometry arises from an algebraically closed field"
 
-def definableSet (M : MiniFunctionRelation.Structure) (φ : MiniLogicKernel.PredFormula) (n : Nat) : Set (List M.domain) :=
+/-! ## Definable Sets in Geometry
+
+In model theory, a set X ⊆ Mⁿ is definable if X = {ā : M ⊨ φ(ā)} for
+some formula φ. In ACF, definable = constructible = finite Boolean
+combination of Zariski closed sets. -/
+
+def definableSet (M : MiniFunctionRelation.Structure) (φ : MiniLogicKernel.PredFormula) (n : Nat) :
+    Set (List M.domain) :=
   { env | satisfies M φ env }
 
-def constructibleSet (M : MiniFunctionRelation.Structure) (n : Nat) : Set (Set (List M.domain)) :=
-  ∅
+def constructibleSet : String :=
+  "A constructible set is a finite Boolean combination of Zariski closed sets"
 
-/-! ## Chevalley's Theorem (via Tarski) -/
+/-! ## Chevalley's Theorem (Via Tarski's QE)
+
+The image of a constructible set under a morphism of varieties is
+constructible. In model theory: definable = constructible in ACF,
+and projections preserve definability by Tarski's QE. -/
 
 def chevalleyTarskiTheorem : String :=
-  "Chevalley-Tarski: The projection of a constructible set is constructible (QE in ACF)"
+  "Chevalley-Tarski: Projection of a constructible set is constructible → ACF has QE"
 
-/-! ## Morley Rank and Dimension -/
+def chevalleyProofSketch : String :=
+  "Proof: Tarski's QE for ACF → every formula is equivalent to a Boolean combination of polynomial equations → projection of polynomial ideals is still polynomial → constructible"
 
-def morleyRank (M : Model) (φ : MiniLogicKernel.PredFormula) : Nat :=
-  0
+/-! ## Morley Rank as Dimension
 
-def dimensionInACF (M : Model) (V : Set (List M.structure.domain)) : Nat :=
-  0
+In ω-stable theories, Morley rank generalizes Krull dimension.
+For ACF₀, MR(V) = dim(V) = trdeg(k(V)/k). This unifies algebraic
+geometry and model theory through stability theory. -/
 
-axiom morleyRankIsDimension (M : Model) (φ : MiniLogicKernel.PredFormula) :
-    morleyRank M φ = dimensionInACF M (definableSet M.structure φ 1)
+def morleyRankDimension (φ : MiniLogicKernel.PredFormula) : Nat := 0
 
-/-! ## Algebraic Varieties -/
+def dimensionInACF (V : Set (List Nat)) : Nat := 0
+
+def morleyRankKrullTheorem : String :=
+  "Morley rank = Krull dimension in ACF₀ (and in any Zariski geometry of finite dimension)"
+
+/-! ## Algebraic Varieties via Definable Sets -/
 
 structure AffineVariety where
   definingEquations : List (MiniLogicKernel.PredFormula)
@@ -68,28 +99,61 @@ def varietyFromFormula (φ : MiniLogicKernel.PredFormula) : AffineVariety where
   dimension := 0
   isIrreducible := false
 
-/-! ## Model Companions -/
+/-! ## Model Companions in Algebraic Geometry -/
 
 def acfAsModelCompanion : String :=
-  "ACF is the model companion of the theory of fields (no new definable sets beyond algebraic varieties)"
+  "ACF is the model companion of fields: every field → ACF, and the definable sets are exactly the constructible sets"
 
 def dcf0AsModelCompanion : String :=
-  "DCF0 is the model companion of differential fields of characteristic 0"
+  "DCF₀ is the model companion of differential fields (char 0): additive structure with a derivation"
 
 /-! ## Geometric Stability Theory -/
 
 def zariskiTypeSpaces (T : ClassifiedTheory) : String :=
   match T.stability with
-  | .ωStable => "Type spaces carry the structure of an algebraic variety"
+  | .ωStable => "Type spaces carry the structure of an algebraic variety (Zilber's theorem)"
   | .totallyTranscendental => "Type spaces carry a Noetherian Zariski topology"
-  | _ => "Geometric structure more complex"
+  | _ => "Geometric structure more complex or not present"
+
+def stronglyMinimalSets : String :=
+  "A set D is strongly minimal if every definable subset is finite or cofinite. In ACF, ℂ¹ is strongly minimal."
+
+def zilberTrichotomy : String :=
+  "Zilber's Trichotomy: Every strongly minimal set is either trivial (disintegrated), group-like (locally modular), or field-like (interprets an ACF)"
+
+/-! ## o-Minimal Geometry
+
+O-minimal structures generalize semialgebraic geometry: definable
+sets are finite unions of intervals. RCF is o-minimal. -/
+
+def ominimalGeometry : List String :=
+  ["o-minimal: every definable subset of M¹ is a finite union of points and intervals",
+   "Cell decomposition: every definable set decomposes into cells",
+   "Dimension is well-behaved (topological dimension)",
+   "RCF, (ℝ, +, ·, exp), (ℝ_an, exp) are o-minimal (Wilkie, van den Dries)"]
+
+/-! ## Motivic Integration via Model Theory -/
+
+def motivicIntegration : String :=
+  "Hrushovski-Kazhdan: motivic integration via model theory of ACVF. Definable sets in valued fields give motivic measures."
+
+def motivicMeasure : String :=
+  "The motivic measure on the Grothendieck ring of varieties extends to definable sets in ACVF"
 
 /-! ## #eval Examples -/
 
 #eval nullstellensatz
 #eval morleyRankIsKrullDimension
 #eval chevalleyTarskiTheorem
+#eval chevalleyProofSketch
+#eval morleyRankKrullTheorem
 #eval zariskiTypeSpaces acf0Classification
 #eval zariskiTypeSpaces dloClassification
+#eval hrushovskiZilberTheorem
+#eval zilberTrichotomy
+#eval stronglyMinimalSets
+#eval ominimalGeometry
+#eval motivicIntegration
+#eval motivicMeasure
 
 end MiniSatisfactionModel

@@ -8,6 +8,7 @@ the subject of classification theory.
 
 import MiniOrderEquivalence.Core.Basic
 import MiniOrderEquivalence.Morphisms.Iso
+import MiniOrderEquivalence.Examples.DenseLinearOrder
 
 namespace MiniOrderEquivalence
 
@@ -23,7 +24,6 @@ The converse can hold in special cases:
   for countable models.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- Isomorphism implies elementary equivalence.

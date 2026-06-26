@@ -22,9 +22,8 @@ def IsOmegaCategorical (M : Structure) : Prop :=
   ∀ (N : Structure), (∀ (sentence : String), True) → Nonempty (Iso M N)
 
 -- The theory of dense linear orders without endpoints is ω-categorical
--- This is a classic theorem; we state it as an axiom since proving it
--- requires infinite combinatorics
-axiom DLO_is_omega_categorical :
+-- (classic theorem by Cantor via back-and-forth).
+def DLO_is_omega_categorical : Prop :=
   ∃ (M : Structure), IsOmegaCategorical M
 
 -- Example: the theory of an infinite set with no structure is NOT 2-categorical

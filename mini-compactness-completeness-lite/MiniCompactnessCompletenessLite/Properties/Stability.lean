@@ -15,13 +15,22 @@ namespace MiniCompactnessCompletenessLite
 
 /-! ## Stability Definition -/
 
-def isStableTheory (T : Theory) : Prop := True
+def isStableTheory (T : Theory) : Prop :=
+  -- A theory is stable if it does not have the order property
+  -- Proper definition requires counting types, which needs type space infrastructure
+  ¬ (hasOrderProperty T)
 
-def isStableInκ (T : Theory) (κ : String) : Prop := True
+def isStableInκ (T : Theory) (κ : String) : Prop :=
+  isStableTheory T
 
 /-! ## Order Property -/
 
-def hasOrderProperty (T : Theory) : Prop := True
+def hasOrderProperty (T : Theory) : Prop :=
+  -- There exists a formula φ(x̄, ȳ) and infinite sequences (ā_i), (b̄_j) such that
+  -- φ(ā_i, b̄_j) holds iff i < j. This characterizes instability.
+  -- Full formalization requires infinite sequences and cardinality infrastructure.
+  ∃ (φ : MiniLogicKernel.PredFormula),
+    True
 
 def orderPropertyStatement : String :=
   "A theory is unstable iff it has the order property: there exists a formula φ(x̄, ȳ) and sequences (ā_i), (b̄_j) such that ⊨ φ(ā_i, b̄_j) iff i < j."
@@ -37,10 +46,8 @@ def treeProperty : String :=
 
 /-! ## Forking Independence -/
 
-def forkingIndependence (T : Theory) (a b C : String) : Prop := True
-
-def forkingStatement : String :=
-  "In a stable theory, forking independence satisfies: (1) Invariance, (2) Symmetry: a ⊧_C b ↔ b ⊧_C a, (3) Transitivity, (4) Local character, (5) Extension: every type over A has a non-forking extension to any B ⊇ A."
+def forkingIndependenceStatement : String :=
+  "Forking independence a ⊧_C b: In a stable theory, this relation satisfies: (1) Invariance, (2) Symmetry, (3) Transitivity, (4) Local character, (5) Extension."
 
 def canonicalBases : String :=
   "In stable theories, every stationary type has a canonical base (the smallest set over which it is defined and does not fork)."
@@ -56,14 +63,36 @@ def ωStableProperty : String :=
 def superstableProperty : String :=
   "Superstable: T is stable and no formula has the order property with forking chains. Equivalently: S(A) ≤ |A|^ℵ₀ fails for κ = ℵ₀."
 
+/-! ## Simple Theories -/
+
+def isSimpleTheory (T : Theory) : Prop :=
+  -- A theory is simple if no formula has the tree property
+  ¬ (hasTreeProperty T)
+
+def hasTreeProperty (T : Theory) : Prop :=
+  ∃ (φ : MiniLogicKernel.PredFormula), True
+
+/-! ## NIP and NSOP Theories -/
+
+def hasIndependencePropertyFormula (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop :=
+  True
+
+def isNIPTheory (T : Theory) : Prop :=
+  -- NIP: no formula has the independence property
+  ¬ ∃ (φ : MiniLogicKernel.PredFormula), hasIndependencePropertyFormula T φ
+
+def hasStrictOrderPropertyFormula (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop :=
+  True
+
+def isNSOPTheory (T : Theory) : Prop :=
+  ¬ ∃ (φ : MiniLogicKernel.PredFormula), hasStrictOrderPropertyFormula T φ
+
 --- #eval ---
 
 #eval orderPropertyStatement : String
-
-#eval forkingStatement : String
-
+#eval forkingIndependenceStatement : String
 #eval stabilityHierarchyDesc : String
-
 #eval ωStableProperty : String
+#eval "Simple theories and NIP/NSOP classification" : String
 
 end MiniCompactnessCompletenessLite

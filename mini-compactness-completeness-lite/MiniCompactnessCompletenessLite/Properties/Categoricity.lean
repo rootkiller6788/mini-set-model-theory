@@ -15,15 +15,24 @@ namespace MiniCompactnessCompletenessLite
 
 /-! ## Categoricity Definitions -/
 
-def isCategorical (T : Theory) : Prop := True
+def isCategorical (T : Theory) : Prop :=
+  ∀ (M N : MiniFunctionRelation.Structure), isModelOf M T → isModelOf N T → M ≅ N
 
-def isCategoricalIn (T : Theory) (κ : String) : Prop := True
+def isCategoricalInPower (T : Theory) : Prop :=
+  isCategorical T
 
-def isAleph0Categorical (T : Theory) : Prop := True
+def isAleph0Categorical (T : Theory) : Prop :=
+  -- Has a unique countable model up to isomorphism
+  ∀ (M N : MiniFunctionRelation.Structure),
+    isModelOf M T → isModelOf N T →
+    -- "countable" is informal here; we approximate with isomorphism
+    M ≅ N
 
-def isUncountablyCategoricalTh (T : Theory) : Prop := True
+def isUncountablyCategoricalTh (T : Theory) : Prop :=
+  isCategorical T
 
-def isTotallyCategorical (T : Theory) : Prop := True
+def isTotallyCategorical (T : Theory) : Prop :=
+  isCategorical T
 
 /-! ## Morley's Theorem -/
 

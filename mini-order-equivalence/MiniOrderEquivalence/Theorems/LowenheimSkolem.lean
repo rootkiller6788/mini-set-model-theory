@@ -23,7 +23,6 @@ cardinality alone (there exist elementarily equivalent structures
 of different cardinalities).
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- The downward Lowenheim-Skolem theorem: for any structure M and

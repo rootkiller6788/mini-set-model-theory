@@ -12,6 +12,7 @@ quotients, and universal constructions.
 - `Theorems`      — Basic, UniversalProperties, Classification, Main, Compactness, LowenheimSkolem
 - `Examples`      — Standard, Counterexamples, FiniteStructures, DenseLinearOrder
 - `Bridges`       — ToAlgebra, ToTopology, ToGeometry, ToComputation
+- `ResearchFrontiers` — L9: Condensed Math, Synthetic Spectra, HoTT/UF, Continuous Logic
 -/
 
 import MiniLanguageStructure.Core.Basic
@@ -42,3 +43,4 @@ import MiniLanguageStructure.Bridges.ToAlgebra
 import MiniLanguageStructure.Bridges.ToTopology
 import MiniLanguageStructure.Bridges.ToGeometry
 import MiniLanguageStructure.Bridges.ToComputation
+import MiniLanguageStructure.ResearchFrontiers

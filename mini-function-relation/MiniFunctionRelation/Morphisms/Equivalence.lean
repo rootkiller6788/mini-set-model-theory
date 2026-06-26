@@ -1,88 +1,97 @@
-import MiniFunctionRelation.Core.Basic
+﻿import MiniFunctionRelation.Core.Basic
 import MiniFunctionRelation.Morphisms.Hom
 import MiniFunctionRelation.Morphisms.Iso
+import MiniFunctionRelation.Core.Syntax
+import MiniFunctionRelation.Core.Semantics
 
 namespace MiniFunctionRelation
 
 /-
-# Elementary Equivalence
+# Equivalence Relations on Structures
 
-Two structures are elementarily equivalent when they satisfy the same
-first-order sentences. This is a higher-level concept; here we define
-a type-valued version using an axiomatized equivalence relation.
+Isomorphism equivalence, elementary equivalence (via Syntax.lean),
+and other equivalence notions on the class of structures.
 -/
 
-structure ElementaryEquiv (M N : Structure) where
-  equivSentences : ∀ (sentence : String), Bool
-  -- In a full implementation, sentences would be in a formal language;
-  -- here we use a placeholder.
-  sound : True
-  -- The property: M ⊨ φ iff N ⊨ φ for all first-order sentences φ
+/-- Isomorphism equivalence: M ≅ N.
+    Reuses the Iso type from Morphisms/Iso.lean. -/
+def IsoEquiv (M N : Structure) : Prop := Nonempty (Iso M N)
 
-def ElementaryEquiv.refl (M : Structure) : ElementaryEquiv M M where
-  equivSentences _ := true
-  sound := ⟨⟩
+theorem IsoEquiv.refl (M : Structure) : IsoEquiv M M :=
+  ⟨Iso.id M⟩
 
-def ElementaryEquiv.symm {M N : Structure} (e : ElementaryEquiv M N) : ElementaryEquiv N M where
-  equivSentences s := e.equivSentences s
-  sound := ⟨⟩
+theorem IsoEquiv.symm {M N : Structure} (h : IsoEquiv M N) : IsoEquiv N M := by
+  rcases h with ⟨i⟩; exact ⟨Iso.symm i⟩
 
-def ElementaryEquiv.trans {M N O : Structure} (e1 : ElementaryEquiv M N) (e2 : ElementaryEquiv N O) :
-    ElementaryEquiv M O where
-  equivSentences s := e1.equivSentences s && e2.equivSentences s
-  sound := ⟨⟩
+theorem IsoEquiv.trans {M N O : Structure} (hMN : IsoEquiv M N) (hNO : IsoEquiv N O) :
+    IsoEquiv M O := by
+  rcases hMN with ⟨i⟩; rcases hNO with ⟨j⟩; exact ⟨Iso.comp j i⟩
 
-theorem ElementaryEquiv.refl_prop (M : Structure) : True := (ElementaryEquiv.refl M).sound
+/-- Elementary equivalence: M ≡ N.
+    Defined in Syntax.lean as `elementarilyEquivalent`. -/
 
-theorem ElementaryEquiv.symm_prop {M N : Structure} (e : ElementaryEquiv M N) :
-    ElementaryEquiv.symm (ElementaryEquiv.symm e) = e := rfl
+/-- Isomorphism implies elementary equivalence (proved in Semantics.lean). -/
+theorem iso_implies_elemEquiv {M N : Structure} (i : Iso M N) : elementarilyEquivalent M N :=
+  iso_elementarilyEquivalent i
 
-theorem ElementaryEquiv.trans_prop {M N O : Structure} (e1 : ElementaryEquiv M N) (e2 : ElementaryEquiv N O) :
-    (ElementaryEquiv.trans e1 e2).sound = (ElementaryEquiv.trans e1 e2).sound := rfl
+/-- The converse is false in general: e.g., (ℚ, <) ≡ (ℝ, <) but ℚ ≇ ℝ as orders
+    (one is countable, the other uncountable). -/
+def nonIsomorphicButElemEquiv : Prop :=
+  ∃ (M N : Structure), elementarilyEquivalent M N ∧ ¬ IsoEquiv M N
 
--- Iso implies elementary equivalence (classic model theory fact)
-def Iso.toElementaryEquiv {M N : Structure} (i : Iso M N) : ElementaryEquiv M N where
-  equivSentences _ := true
-  sound := ⟨⟩
+/-- Homotopy equivalence of structures (a notion from categorical logic).
+    Two structures are homotopy equivalent if there exist homomorphisms
+    f: M→N and g: N→M such that g∘f and f∘g are homotopic to identity.
+    (Simplified: we use the existence of a retraction/section.) -/
+def HomotopyEquiv (M N : Structure) : Prop :=
+  ∃ (f : Hom M N) (g : Hom N M),
+    (∀ (x : M.domain), g.map (f.map x) = x) ∧
+    (∀ (y : N.domain), f.map (g.map y) = y)
 
--- Concrete test structures
-def Struct1 : Structure where
+/-- Homotopy equivalence implies isomorphism in the category of structures
+    (since we don't have a notion of homotopy between homs).
+    With our definition, HomotopyEquiv = Iso. -/
+theorem homotopyEquiv_iff_iso (M N : Structure) : HomotopyEquiv M N ↔ IsoEquiv M N := by
+  constructor
+  · rintro ⟨f, g, h_left, h_right⟩
+    refine ⟨{
+      toHom := f
+      invHom := g
+      leftInv := h_left
+      rightInv := h_right
+    }⟩
+  · rintro ⟨i⟩
+    refine ⟨i.toHom, i.invHom, i.leftInv, i.rightInv⟩
+
+/-- The category of structures with homs forms a concrete category.
+    The equivalence relations defined here correspond to:
+    - IsoEquiv = isomorphism in the categorical sense
+    - ElementaryEquiv = equivalence in the logic sense
+    - HomotopyEquiv = categorical equivalence -/
+
+/-- Concrete examples of isomorphic structures. -/
+def UnitStruct : Structure where
   domain := Unit
-  predInterp p args := match p, args with
-    | 0, [] => True
-    | _, _ => False
+  predInterp _ _ := False
   constInterp _ := ()
 
-def Struct2 : Structure where
-  domain := Bool
-  predInterp p args := match p, args with
-    | 0, [true] => True
-    | _, _ => False
-  constInterp _ := false
+def AnotherUnit : Structure where
+  domain := Unit
+  predInterp _ _ := True
+  constInterp _ := ()
 
-def Struct3 : Structure where
-  domain := Nat
-  predInterp p args := match p, args with
-    | 0, [] => True
-    | _, _ => False
-  constInterp _ := 0
+/-- Two 1-element structures with different predicates are NOT isomorphic. -/
+theorem diff_pred_not_iso : ¬ IsoEquiv UnitStruct AnotherUnit := by
+  intro h
+  rcases h with ⟨i⟩
+  have h_true : AnotherUnit.predInterp 0 [] := by simp [AnotherUnit]
+  have h_contra : UnitStruct.predInterp 0 [] := i.invHom.preservesPred 0 [] h_true
+  simp [UnitStruct] at h_contra
 
--- Elementary equivalence examples
-def ee12 : ElementaryEquiv Struct1 Struct2 where
-  equivSentences _ := true
-  sound := ⟨⟩
-
-def ee23 : ElementaryEquiv Struct2 Struct3 where
-  equivSentences _ := true
-  sound := ⟨⟩
-
-def ee13 : ElementaryEquiv Struct1 Struct3 :=
-  ElementaryEquiv.trans ee12 ee23
-
--- eval examples
-#eval (ElementaryEquiv.refl Struct1).equivSentences "∀x. P(x)"
-#eval (ElementaryEquiv.symm ee12).equivSentences "∃x. x=x"
-#eval (ElementaryEquiv.trans ee12 ee23).equivSentences "⊥"
-#eval ee13.equivSentences "⊤"
+/-- Evaluation examples. -/
+#eval "Equivalence.lean loaded"
+#eval "  IsoEquiv (refl, symm, trans)"
+#eval "  elementarilyEquivalent (via Syntax.lean)"
+#eval "  HomotopyEquiv ↔ Iso"
 
 end MiniFunctionRelation

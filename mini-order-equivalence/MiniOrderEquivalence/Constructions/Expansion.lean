@@ -17,7 +17,6 @@ equivalence: if M ≡ N then their definitional expansions are also
 elementarily equivalent.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- An expansion of a structure M adds interpretations for new predicate

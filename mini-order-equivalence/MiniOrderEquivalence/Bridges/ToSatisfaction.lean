@@ -16,7 +16,6 @@ Elementary equivalence as a generalization of the satisfaction relation:
   elementary equivalence classes.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- The satisfaction relation as a binary relation between structures

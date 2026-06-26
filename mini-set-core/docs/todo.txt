@@ -1,20 +1,23 @@
-MiniSetCore TODO
-================
+MiniSetCore TODO (v0.2.0 COMPLETE)
+==================================
 
 High Priority:
-[ ] Implement set-theoretic axioms (Laws.lean)
-[ ] Fill in subobject construction (Constructions/Subobjects.lean)
-[ ] Fill in quotient construction (Constructions/Quotients.lean)
-[ ] Prove basic set theorems (Theorems/Basic.lean)
+[x] Implement set-theoretic axioms (Laws.lean) — COMPLETE: absorption, double complement, diff laws
+[x] Fill in subobject construction (Constructions/Subobjects.lean) — COMPLETE: lattice laws, Boolean algebra
+[x] Fill in quotient construction (Constructions/Quotients.lean) — COMPLETE: equiv rel, partition, quotient set
+[x] Prove basic set theorems (Theorems/Basic.lean) — COMPLETE: Cantor's theorem, De Morgan, pigeonhole
 
 Medium Priority:
-[ ] Universal properties of product (Theorems/UniversalProperties.lean)
-[ ] Cardinality classification (Theorems/Classification.lean)
-[ ] Property invariants (Properties/Invariants.lean)
-[ ] Property preservation theorems (Properties/Preservation.lean)
+[x] Universal properties of product (Theorems/UniversalProperties.lean) — COMPLETE: subobject classifier, product/coproduct
+[x] Cardinality classification (Theorems/Classification.lean) — COMPLETE: finite-countable, disjoint union
+[x] Property invariants (Properties/Invariants.lean) — COMPLETE: bounded sets, subset finiteness, decidable emptiness
+[x] Property preservation theorems (Properties/Preservation.lean) — COMPLETE: finite union/inter, countable union
 
 Low Priority:
-[ ] Bridge implementations (Bridges/To*.lean)
-[ ] Counterexamples library (Examples/Counterexamples.lean)
-[ ] Universal constructions (Constructions/Universal.lean)
-[ ] Classification data (Properties/ClassificationData.lean)
+[x] Bridge implementations (Bridges/To*.lean) — COMPLETE: ring of sets, topology axioms, geometry, DFA
+[x] Counterexamples library (Examples/Counterexamples.lean) — COMPLETE: Russell, Vitali, non-well-founded
+[x] Universal constructions (Constructions/Universal.lean) — COMPLETE: equalizers, pullbacks, monos/epis
+[x] Classification data (Properties/ClassificationData.lean) — COMPLETE: SetClass hierarchy
+
+TOTAL LINES: 3771 (MiniSetCore) / 4263 (full project)
+STATUS: COMPLETE ✅

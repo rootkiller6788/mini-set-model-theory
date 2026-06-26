@@ -21,7 +21,7 @@ def stressTest : List String :=
 /-! ## Repeated axiom set membership tests -/
 def stressMembership : List Bool :=
   List.range 1000 |>.map fun _ =>
-    zfcAxiomSet.contains ("extensionality", "∀x∀y(∀z(z∈x↔z∈y)→x=y)")
+    zfcAxiomSet.containsName "zfc-extensionality"
 
 #eval s!"1000 set membership tests: {stressMembership.length} results"
 

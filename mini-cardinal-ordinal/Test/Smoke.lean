@@ -37,9 +37,9 @@ open MiniCardinalOrdinal
 #eval Cardinal.mul Cardinal.alephOne Cardinal.alephOne
 
 /-! ## Core.Objects: Cardinal comparisons -/
-#eval Cardinal.eq Cardinal.alephZero Cardinal.alephZero
-#eval Cardinal.le Cardinal.alephZero Cardinal.alephOne
-#eval Cardinal.lt Cardinal.alephZero Cardinal.alephOne
+#eval Cardinal.eqBool Cardinal.alephZero Cardinal.alephZero
+#eval Cardinal.leBool Cardinal.alephZero Cardinal.alephOne
+#eval Cardinal.ltBool Cardinal.alephZero Cardinal.alephOne
 
 /-! ## Core.Objects: Ordinal -/
 #eval (Ordinal.zero : Ordinal)

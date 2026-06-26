@@ -9,21 +9,14 @@ import MiniOrderEquivalence.Core.Basic
 
 namespace MiniOrderEquivalence
 
-/-! ## Product Constructions
+/-! ## Product Constructions -/
 
-The product of two structures M × N has domain M.domain × N.domain.
-Elementary equivalence is NOT generally preserved under products,
-but it is preserved for certain classes (e.g., modules).
-
-Feferman-Vaught: the theory of a product is determined by the
-theories of the factors in a computable way.
--/
-
-open MiniFunctionRelation
 open MiniLogicKernel
 
-/-- The product of two structures.
-    predInterp applies predicate componentwise (conjunction). -/
+/-- The product of two first-order structures M × N.
+    The domain is M.domain × N.domain. Predicates are interpreted
+    componentwise: M×N ⊨ P(a₁,b₁,...,aₙ,bₙ) iff M ⊨ P(a₁,...,aₙ)
+    AND N ⊨ P(b₁,...,bₙ). Constants are paired. -/
 def productStructure (M N : Structure) : Structure where
   domain := M.domain × N.domain
   predInterp p args :=
@@ -34,19 +27,19 @@ def productStructure (M N : Structure) : Structure where
 infixl:70 " ×ₛ " => productStructure
 
 /-- The projection homomorphism from M ×ₛ N onto M. -/
-def productFst (M N : Structure) : MiniFunctionRelation.Hom (M ×ₛ N) M where
+def productFst (M N : Structure) : Hom (M ×ₛ N) M where
   map := Prod.fst
   preservesPred p args h := h.1
   preservesConst _ := rfl
 
 /-- The projection homomorphism from M ×ₛ N onto N. -/
-def productSnd (M N : Structure) : MiniFunctionRelation.Hom (M ×ₛ N) N where
+def productSnd (M N : Structure) : Hom (M ×ₛ N) N where
   map := Prod.snd
   preservesPred p args h := h.2
   preservesConst _ := rfl
 
 /-- Diagonal embedding M → M ×ₛ M. -/
-def diagonalEmbedding (M : Structure) : MiniFunctionRelation.Hom M (M ×ₛ M) where
+def diagonalEmbedding (M : Structure) : Hom M (M ×ₛ M) where
   map x := (x, x)
   preservesPred p args h := ⟨h, h⟩
   preservesConst _ := rfl
@@ -58,19 +51,71 @@ theorem finiteProductFinite (M N : Structure) (hM : Nonempty (Fintype M.domain))
   rcases hN with ⟨hN⟩
   exact ⟨inferInstanceAs (Fintype (M.domain × N.domain))⟩
 
-/-- Elementary equivalence is NOT preserved under products in general.
-    Counterexample: (ℕ, <) ≡ (ℤ, <) as DLOs, but their squares differ. -/
-theorem elemEquivNotPreservedByProduct : True := by
-  trivial
+/-- The product of structures is commutative up to isomorphism:
+    M ×ₛ N ≅ N ×ₛ M. -/
+theorem productComm (M N : Structure) : Nonempty (Iso (M ×ₛ N) (N ×ₛ M)) := by
+  refine ⟨{
+    toHom := {
+      map := fun ⟨m, n⟩ => (n, m)
+      preservesPred p args h := by
+        simp [productStructure] at h ⊢
+        exact ⟨h.2, h.1⟩
+      preservesConst _ := rfl
+    }
+    invHom := {
+      map := fun ⟨n, m⟩ => (m, n)
+      preservesPred p args h := by
+        simp [productStructure] at h ⊢
+        exact ⟨h.2, h.1⟩
+      preservesConst _ := rfl
+    }
+    leftInv _ := rfl
+    rightInv _ := rfl
+  }⟩
 
-/-- Product of structures respects elementary equivalence when
-    the theories are stable under Feferman-Vaught decomposition. -/
-theorem fefermanVaught (M N M' N' : Structure)
-    (hM : ElementarilyEquivalent M M') (hN : ElementarilyEquivalent N N') :
-    True := by
-  trivial
+/-- The product is associative up to isomorphism:
+    (M ×ₛ N) ×ₛ P ≅ M ×ₛ (N ×ₛ P). -/
+theorem productAssoc (M N P : Structure) :
+    Nonempty (Iso ((M ×ₛ N) ×ₛ P) (M ×ₛ (N ×ₛ P))) := by
+  refine ⟨{
+    toHom := {
+      map := fun ⟨⟨m, n⟩, p⟩ => (m, (n, p))
+      preservesPred q args h := by
+        simp [productStructure] at h ⊢
+        exact ⟨h.1.1, h.1.2, h.2⟩
+      preservesConst _ := rfl
+    }
+    invHom := {
+      map := fun ⟨m, ⟨n, p⟩⟩ => (⟨m, n⟩, p)
+      preservesPred q args h := by
+        simp [productStructure] at h ⊢
+        exact ⟨⟨h.1, h.2.1⟩, h.2.2⟩
+      preservesConst _ := rfl
+    }
+    leftInv _ := rfl
+    rightInv _ := rfl
+  }⟩
 
-/-! ## Concrete examples of products -/
+/-- Trivial product: M ×ₛ Unit ≅ M. -/
+theorem productWithUnit (M : Structure) : Nonempty (Iso (M ×ₛ UnitStructure) M) := by
+  refine ⟨{
+    toHom := {
+      map := Prod.fst
+      preservesPred p args h := h.1
+      preservesConst _ := rfl
+    }
+    invHom := {
+      map := fun m => (m, ())
+      preservesPred p args h := by
+        simp [productStructure, UnitStructure]
+        exact h
+      preservesConst _ := rfl
+    }
+    leftInv _ := rfl
+    rightInv _ := rfl
+  }⟩
+
+/-! ## Concrete Product Examples -/
 
 /-- The product Nat × Nat as a structure. -/
 def NatSquared : Structure := NatStructure ×ₛ NatStructure
@@ -81,18 +126,18 @@ def NatTimesInt : Structure := NatStructure ×ₛ IntStructure
 /-- A finite product: Fin 3 × Fin 5. -/
 def Fin3TimesFin5 : Structure := FinOrderStructure 3 ×ₛ FinOrderStructure 5
 
+/-- The product of two trivial structures is trivial. -/
+def TrivialProduct : Structure := UnitStructure ×ₛ UnitStructure
+
 /-! ## `#eval` Examples -/
 
-/-- First projection of product -/
 #eval (productFst NatStructure NatStructure).map (3, 7)
-
-/-- Second projection of product -/
 #eval (productSnd NatStructure NatStructure).map (3, 7)
-
-/-- Constant in product structure -/
 #eval (NatSquared.constInterp 0)
-
-/-- Product of Fin orders -/
 #eval (Fin3TimesFin5.constInterp 0)
+#eval (diagonalEmbedding NatStructure).map 5
+#eval finiteProductFinite (FinOrderStructure 3) (FinOrderStructure 5)
+  (by have : Fintype (Fin (max 3 1)) := inferInstance; exact ⟨this⟩)
+  (by have : Fintype (Fin (max 5 1)) := inferInstance; exact ⟨this⟩)
 
 end MiniOrderEquivalence

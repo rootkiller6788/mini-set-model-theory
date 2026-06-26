@@ -23,7 +23,6 @@ Consequences for elementary equivalence:
   into complete theories.
 -/
 
-open MiniFunctionRelation
 open MiniLogicKernel
 
 /-- Semantic consequence: T ⊨ φ if every model of T satisfies φ. -/

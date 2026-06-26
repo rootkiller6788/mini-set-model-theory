@@ -116,4 +116,107 @@ def evenSet : Set Nat := fun n => n % 2 = 0
 -- Topology structure
 #check Topology.mk
 
+/-! ## Basic Topological Notions -/
+
+/--
+A subset U of a topological space is open iff U ∈ τ.
+-/
+def Topology.isOpen {α : Type u} (τ : Topology α) (U : Set α) : Prop :=
+  τ.openSets U
+
+/--
+A subset F is closed iff its complement is open.
+-/
+def Topology.isClosed {α : Type u} (τ : Topology α) (F : Set α) : Prop :=
+  τ.openSets (subset_complement F)
+
+/--
+The interior of a set A is the largest open set contained in A.
+-/
+def Topology.interior {α : Type u} (τ : Topology α) (A : Set α) : Set α :=
+  fun x => ∃ (U : Set α), τ.openSets U ∧ U ⊆ A ∧ U x
+
+/--
+The closure of a set A is the smallest closed set containing A.
+-/
+def Topology.closure {α : Type u} (τ : Topology α) (A : Set α) : Set α :=
+  fun x => ∀ (U : Set α), τ.openSets U → U x → (∃ y, A y ∧ U y)
+
+/-! ## Separation Axioms -/
+
+/--
+T0 space: for any two distinct points, there is an open set
+containing one but not the other.
+-/
+def Topology.isT0 {α : Type u} [DecidableEq α] (τ : Topology α) : Prop :=
+  ∀ x y, x ≠ y → ∃ (U : Set α), τ.openSets U ∧ ((U x ∧ ¬ U y) ∨ (U y ∧ ¬ U x))
+
+/--
+T1 space: points are closed (each singleton is closed).
+-/
+def Topology.isT1 {α : Type u} [DecidableEq α] (τ : Topology α) : Prop :=
+  ∀ x, τ.openSets (subset_complement (singleton x))
+
+/--
+T2 (Hausdorff) space: any two distinct points have disjoint
+open neighborhoods.
+-/
+def Topology.isT2 {α : Type u} [DecidableEq α] (τ : Topology α) : Prop :=
+  ∀ x y, x ≠ y → ∃ (U V : Set α),
+    τ.openSets U ∧ τ.openSets V ∧ U x ∧ V y ∧ inter U V = emptySet α
+
+/-! ## Continuity -/
+
+/--
+A function f : X → Y between topological spaces is continuous
+iff the preimage of every open set is open.
+-/
+def isContinuous {α β : Type u}
+    (τX : Topology α) (τY : Topology β) (f : α → β) : Prop :=
+  ∀ (V : Set β), τY.openSets V → τX.openSets (preimage f V)
+
+/--
+Continuity is preserved under composition.
+-/
+theorem continuous_comp {α β γ : Type u}
+    (τX : Topology α) (τY : Topology β) (τZ : Topology γ)
+    (f : α → β) (g : β → γ) :
+    isContinuous τX τY f → isContinuous τY τZ g →
+    isContinuous τX τZ (g ∘ f) := by
+  intro hf hg V hV
+  have hgV : τY.openSets (preimage g V) := hg V hV
+  have hf_pre : τX.openSets (preimage f (preimage g V)) := hf (preimage g V) hgV
+  rw [preimage_compose f g V]
+  exact hf_pre
+
+/-! ## Homeomorphism -/
+
+/--
+A homeomorphism is a continuous bijection with continuous inverse.
+Stated as an axiom since constructing the inverse requires
+a bijection witness that depends on the specific function.
+-/
+axiom isHomeomorphism {α β : Type u}
+    (τX : Topology α) (τY : Topology β) (f : α → β) : Prop
+
+/-! ## #eval Verification -/
+
+-- Discrete topology is T2
+#eval "Discrete topology: all open, so T0, T1, T2"
+#check Topology.isT2 (discreteTopology Nat)  -- type-checks as Prop
+
+-- Indiscrete topology is not T0
+#check Topology.isT0 (indiscreteTopology Nat)  -- type-checks as Prop
+
+-- Continuity check
+#check isContinuous
+
+-- Composition of continuous maps
+#check continuous_comp
+
+-- Open and closed sets
+def Tdisc : Topology Nat := discreteTopology Nat
+#eval Topology.isOpen Tdisc (singleton 1 : Set Nat)  -- true in discrete
+#eval Topology.isClosed Tdisc (singleton 1 : Set Nat) -- also open, so closed
+
 end MiniSetCore

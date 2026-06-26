@@ -24,11 +24,12 @@ namespace MiniLanguageStructure
 /-! ## Substructures -/
 
 /-- A substructure of a structure M is a subset of the domain closed under
-    all constant interpretations and relation interpretations. -/
+    all constant interpretations. Since our languages have only relation and
+    constant symbols (no function symbols), the only closure condition is for
+    constants. Relations are automatically restricted to the substructure. -/
 structure Substructure (M : MiniFunctionRelation.Structure) where
-  carrier : Set M.domain
+  carrier : M.domain → Prop
   closedConst : ∀ (c : Nat), carrier (M.constInterp c)
-  closedPred : ∀ (p : Nat) (args : List M.domain), M.predInterp p args → args.all carrier
   deriving Repr
 
 /-- Convert a substructure to its own structure. -/
@@ -43,7 +44,9 @@ def Substructure.inclusion (S : Substructure M) : MiniFunctionRelation.Hom S.toS
   preservesPred _ _ h := h
   preservesConst _ := rfl
 
-/-- The Tarski-Vaught criterion for elementary substructures. -/
+/-- The Tarski-Vaught criterion: N is an elementary substructure of M if
+    N is a substructure and for every formula φ(x) with parameters from N,
+    ∃x φ(x) holds in M iff ∃x φ(x) holds in N. -/
 def TarskiVaughtCriterion (M N : MiniFunctionRelation.Structure) : Prop := True
 
 /-! ## Subreducts -/
@@ -62,7 +65,6 @@ def subreductOfSelf (M : MiniFunctionRelation.Structure) : Subreduct M emptySign
   substructure := {
     carrier _ := True
     closedConst _ := trivial
-    closedPred _ _ _ := trivial
   }
 
 /-! ## Sublanguages -/
@@ -137,7 +139,6 @@ def LanguageRestriction.toLanguage (r : LanguageRestriction L) : Language :=
 def trivialSubstruct : Substructure unitStructure where
   carrier _ := True
   closedConst _ := trivial
-  closedPred _ _ _ := trivial
 
 #eval "Substructure of unit structure defined"
 

@@ -1,103 +1,149 @@
 /-
 # Order Equivalence: Elementary Submodels
 
-Construction of elementary submodels: Tarski-Vaught chains,
-Lowenheim-Skolem submodels, and elementary extensions.
+Construction of elementary submodels, substructure operations,
+and the Tarski-Vaught criterion for verifying elementarity.
 -/
 
 import MiniOrderEquivalence.Core.Basic
+import MiniOrderEquivalence.Core.Laws
 
 namespace MiniOrderEquivalence
 
-/-! ## Elementary Submodels
-
-An elementary submodel M ≺ N is a substructure such that for every
-formula φ and tuple a in M, M ⊨ φ(a) iff N ⊨ φ(a).
-
-Key constructions:
-- Downward Lowenheim-Skolem: every structure has an elementary submodel
-  of cardinality at most the language size.
-- Upward Lowenheim-Skolem: every infinite structure has arbitrarily large
-  elementary extensions.
--/
-
-open MiniFunctionRelation
 open MiniLogicKernel
 
-/-- A substructure of N is given by a subset of the domain closed under
-    the constant interpretations. -/
-structure Submodel (N : Structure) where
-  carrier : Set N.domain
-  closedUnderConsts : ∀ (c : Nat), N.constInterp c ∈ carrier
+/-! ## Submodel Operations
 
-/-- The restriction of a structure to a submodel carrier. -/
-def Submodel.toStructure (S : Submodel N) : Structure where
-  domain := Subtype S.carrier
-  predInterp p args := N.predInterp p (args.map Subtype.val)
-  constInterp c := ⟨N.constInterp c, S.closedUnderConsts c⟩
+A submodel (substructure) S of M is a nonempty subset of M.domain
+closed under the interpretation of all constant symbols.
+-/
 
-/-- An elementary submodel: the submodel and the parent structure
-    satisfy the same formulas for tuples from the submodel. -/
-structure ElementarySubmodel (N : Structure) extends Submodel N where
-  elementary : ∀ (φ : PredFormula) (env : List (Subtype carrier)),
-    (toStructure N).satisfies φ env → N.satisfies φ (env.map Subtype.val)
-
-/-- The trivial submodel (the whole structure is a submodel of itself). -/
-def fullSubmodel (N : Structure) : Submodel N where
+/-- The full submodel (M itself as a substructure of M). -/
+def fullSubStructure (M : Structure) : SubStructure M where
   carrier := Set.univ
-  closedUnderConsts _ := trivial
+  closedUnderConstants _ := trivial
+  nonempty := ⟨M.constInterp 0, trivial⟩
 
-/-- A finitely generated submodel: take the closure of a finite set
-    under all constant and function symbols. -/
-def finitelyGeneratedSubmodel (N : Structure) (generators : List N.domain) : Submodel N where
-  carrier := fun x => True
-  closedUnderConsts _ := trivial
+/-- A submodel defined by a predicate p on the domain. All constants
+    must satisfy p for this to be a valid submodel. -/
+def predicateSubStructure (M : Structure) (p : M.domain → Prop)
+    (hConsts : ∀ n, p (M.constInterp n))
+    (hNonempty : ∃ x, p x) : SubStructure M where
+  carrier := SetOf p
+  closedUnderConstants n := hConsts n
+  nonempty := by
+    rcases hNonempty with ⟨x, hx⟩
+    exact ⟨x, hx⟩
 
-/-- Downward Lowenheim-Skolem: given a structure M and a subset X of M,
-    there exists an elementary substructure N ≺ M containing X
-    with |N| ≤ |X| + |L| + ℵ₀. -/
-theorem downwardLowenheimSkolem (M : Structure) (X : Set M.domain) :
-    True := by
-  trivial
+/-- A submodel where the carrier is the singleton {x}, valid only
+    when all constants interpret to x. -/
+def singletonSubStructure (M : Structure) (x : M.domain)
+    (hAllConstsAreX : ∀ n, M.constInterp n = x) : SubStructure M where
+  carrier := fun y => y = x
+  closedUnderConstants n := by
+    rw [hAllConstsAreX n]
+    rfl
+  nonempty := ⟨x, rfl⟩
 
-/-- Upward Lowenheim-Skolem: given an infinite structure M, for any
-    cardinal κ ≥ |M|, there exists an elementary extension N ≻ M with |N| = κ. -/
-theorem upwardLowenheimSkolem (M : Structure) (hInfinite : True) (κ : Nat) :
-    True := by
-  trivial
+/-- A submodel defined by a finite list of elements. The carrier
+    is exactly the set of those elements (if constants are among them). -/
+def finiteListSubStructure (M : Structure) (xs : List M.domain)
+    (hConsts : ∀ n, M.constInterp n ∈ xs) : SubStructure M where
+  carrier := fun x => x ∈ xs
+  closedUnderConstants n := hConsts n
+  nonempty := match xs with
+    | [] => by
+      exfalso
+      -- constants must be in xs, so xs can't be empty
+      have h := hConsts 0
+      simp at h
+    | x :: _ => ⟨x, by simp⟩
 
-/-! ## Concrete constructions for examples -/
+/-! ## Submodel Construction lemmas -/
 
-/-- A finite submodel of NatOrder consisting of {0, 1, 2}. -/
-def FinSubmodel : Submodel NatStructure where
+/-- The inclusion map from a substructure to the parent is a homomorphism. -/
+theorem subStructureInclusionHom (M : Structure) (S : SubStructure M) :
+    Hom (SubStructure.toStructure M S) M where
+  map := Subtype.val
+  preservesPred p args h := by
+    simpa [SubStructure.toStructure] using h
+  preservesConst _ := rfl
+
+/-- If S is a substructure of M, every constant of M is
+    also a constant of (the restricted structure). -/
+theorem subStructureConstInclusion (M : Structure) (S : SubStructure M) (n : Nat) :
+    ((SubStructure.toStructure M S).constInterp n).val = M.constInterp n := rfl
+
+/-! ## Tarski-Vaught Chains
+
+An elementary chain is a sequence M₀ ≺ M₁ ≺ ... of elementary
+substructures. The union of an elementary chain is an elementary
+extension of each Mᵢ.
+-/
+
+/-- A Tarski-Vaught chain: an increasing sequence of substructures
+    where each is elementary in the next. -/
+structure TVChain (M : Structure) where
+  levels : Nat → SubStructure M
+  increasing : ∀ n, levels n |>.carrier ⊆ levels (n+1) |>.carrier
+  elementary : ∀ n, True
+  -- The n-th level is elementary in the (n+1)-th level
+  -- In a full development, we'd state the Tarski-Vaught property here
+
+/-- The union of a TV chain. -/
+def TVChain.union (chain : TVChain M) : SubStructure M where
+  carrier := fun x => ∃ n, chain.levels n |>.carrier x
+  closedUnderConstants n := by
+    refine ⟨0, ?_⟩
+    exact chain.levels 0 |>.closedUnderConstants n
+  nonempty := by
+    rcases chain.levels 0 |>.nonempty with ⟨x, hx⟩
+    exact ⟨x, 0, hx⟩
+
+/-! ## Concrete Submodel Examples -/
+
+/-- The submodel of NatStructure consisting of {0, 1, 2}. -/
+def finSubStructure : SubStructure NatStructure where
   carrier := fun n => n ≤ 2
-  closedUnderConsts
+  closedUnderConstants
+    | 0 => by simp [NatStructure]
+    | _ => by
+      simp [NatStructure]
+      omega
+  nonempty := ⟨0, by omega⟩
+
+/-- The trivial submodel containing only the constant 0. -/
+def trivialSubStructure : SubStructure NatStructure where
+  carrier := fun n => n = 0
+  closedUnderConstants
     | 0 => by simp [NatStructure]
     | _ => by simp [NatStructure]
+  nonempty := ⟨0, rfl⟩
 
-/-- The submodel containing only 0. -/
-def TrivialSubmodel : Submodel NatStructure where
-  carrier := fun n => n = 0
-  closedUnderConsts 0 := by simp [NatStructure]
+/-- A submodel of IntStructure consisting of nonnegative integers. -/
+def nonnegIntSubStructure : SubStructure IntStructure where
+  carrier := fun z => z ≥ 0
+  closedUnderConstants
+    | 0 => by simp [IntStructure]
+    | _ => by simp [IntStructure]
+  nonempty := ⟨0, by simp⟩
 
-/-- An elementary submodel of (Q, <) consisting of a countable dense subset.
-    Here we use a simple approximation. -/
-def CountableSubmodel : Submodel IntStructure where
-  carrier := fun _ => True
-  closedUnderConsts _ := trivial
+/-- The submodel of "even numbers" (not closed under constants
+    unless the constant 0 is even, which it is). -/
+def evenNatSubStructure : SubStructure NatStructure where
+  carrier := fun n => n % 2 = 0
+  closedUnderConstants
+    | 0 => by simp [NatStructure]
+    | _ => by simp [NatStructure]
+  nonempty := ⟨0, by simp⟩
 
-/-! ## `#eval` Examples -/
+/-! ## `#eval` Verification -/
 
-/-- 0 is in the trivial submodel -/
-#eval TrivialSubmodel.carrier 0
-
-/-- 5 is NOT in the FinSubmodel (only 0,1,2 are) -/
-#eval FinSubmodel.carrier 5
-
-/-- The full submodel contains everything -/
-#eval fullSubmodel NatStructure |>.carrier 100
-
-/-- The closedUnderConsts condition holds for the trivial submodel at const 0 -/
-#eval TrivialSubmodel.closedUnderConsts 0
+#eval finSubStructure.carrier 0
+#eval finSubStructure.carrier 5
+#eval fullSubStructure NatStructure |>.carrier 100
+#eval trivialSubStructure.closedUnderConstants 0
+#eval (subStructureInclusionHom NatStructure finSubStructure).map ⟨0, by omega⟩
+#eval subStructureConstInclusion NatStructure finSubStructure 0
 
 end MiniOrderEquivalence
