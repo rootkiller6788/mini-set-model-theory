@@ -162,7 +162,11 @@ theorem pushout_property {α β γ δ : Type u}
     (f : γ → α) (g : γ → β) (h : α → δ) (k : β → δ)
     (_hcomm : ∀ c, h (f c) = k (g c)) :
     ∃ (m : α ⊕ β → δ), (∀ a, m (Sum.inl a) = h a) ∧ (∀ b, m (Sum.inr b) = k b) :=
-  sorry
+  -- The copairing [h, k] defined by cases on Sum
+  ⟨λ x => match x with
+    | Sum.inl a => h a
+    | Sum.inr b => k b,
+  λ a => rfl, λ b => rfl⟩
 
 /-! ## Monos and Epis in Set -/
 
