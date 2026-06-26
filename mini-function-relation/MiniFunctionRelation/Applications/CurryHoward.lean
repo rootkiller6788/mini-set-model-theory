@@ -88,10 +88,11 @@ theorem soundness_trivial {M : Structure} (φ : Formula) (σ : Assignment M)
 /-! ## Completeness via Henkin (sketch) -/
 
 /-- Henkin's proof of completeness: every consistent set of sentences
-    has a model built from the constants of the language. -/
+    has a model built from the constants of the language.
+    TODO: formalize the Henkin construction (term model with provability as truth). -/
 def HenkinModel (T : Theory) (h_consistent : Theory.consistent T) : Structure where
   domain := Term    -- use closed terms as domain
-  predInterp p args := True
+  predInterp p args := sorry
   constInterp c := Term.var c
 
 /-! ## Connection to LF and type systems -/

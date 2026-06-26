@@ -10,19 +10,21 @@ namespace MiniFunctionRelation
 A theory is κ-categorical if all models of size κ are isomorphic.
 -/
 
+/-- A set of structures is κ-categorical if any two structures in the set
+    with domain cardinality κ are isomorphic.
+    TODO: add cardinality constraint (currently simplified to all structures in set). -/
 def IsKappaCategorical (models : Set Structure) (kappa : Nat) : Prop :=
-  ∀ (M N : Structure), M ∈ models → N ∈ models →
-    (∀ (f : M.domain ≃ N.domain), True) → Nonempty (Iso M N)
+  ∀ (M N : Structure), M ∈ models → N ∈ models → Nonempty (Iso M N)
 
-def CategoricalInPower (models : Set Structure) (kappa : Nat) : Prop :=
-  (∃ (M : Structure), M ∈ models ∧ True) → IsKappaCategorical models kappa
-
--- A structure is ω-categorical if its theory is ω-categorical
+/-- A structure M is ω-categorical if its complete theory is ℵ₀-categorical:
+    any countable structure elementarily equivalent to M is isomorphic to M.
+    TODO: add countability and elementary equivalence constraints. -/
 def IsOmegaCategorical (M : Structure) : Prop :=
-  ∀ (N : Structure), (∀ (sentence : String), True) → Nonempty (Iso M N)
+  ∀ (N : Structure), Nonempty (Iso M N)
 
--- The theory of dense linear orders without endpoints is ω-categorical
--- (classic theorem by Cantor via back-and-forth).
+/-- The theory of dense linear orders without endpoints is ℵ₀-categorical
+    (Cantor's back-and-forth theorem).
+    Stated as an acknowledged property. -/
 def DLO_is_omega_categorical : Prop :=
   ∃ (M : Structure), IsOmegaCategorical M
 
@@ -39,7 +41,7 @@ def ThreeElStruct : Structure where
 
 theorem not_2_categorical_empty_theory : ¬ (IsOmegaCategorical TwoElStruct) := by
   intro h
-  have hIso := h ThreeElStruct (λ _ => ⟨⟩)
+  have hIso := h ThreeElStruct
   rcases hIso with ⟨i⟩
   have card_eq : Fintype.card Bool = Fintype.card (Fin 3) := by
     apply Fintype.card_congr

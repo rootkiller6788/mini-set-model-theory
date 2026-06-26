@@ -102,6 +102,10 @@ def inconsistent : Theory := {Formula.bot}
 def add (T : Theory) (φ : Sentence) : Theory := Set.insert φ T
 def union (T₁ T₂ : Theory) : Theory := Set.union T₁ T₂
 
+/-- A theory T is complete if for every sentence φ, either φ ∈ T or ¬φ ∈ T. -/
+def isComplete (T : Theory) : Prop :=
+  ∀ (φ : Sentence), φ ∈ T ∨ (Formula.not φ) ∈ T
+
 end Theory
 
 /-! ## Satisfaction Relation -/

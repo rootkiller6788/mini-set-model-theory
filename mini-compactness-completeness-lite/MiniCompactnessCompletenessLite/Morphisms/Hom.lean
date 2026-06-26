@@ -116,28 +116,16 @@ lemma mutuallyInterpretable_trans {T₁ T₂ T₃ : Theory}
     mutuallyInterpretable T₁ T₃ :=
   ⟨relativeInterpretation_trans h₁₂.1 h₂₃.1, relativeInterpretation_trans h₂₃.2 h₁₂.2⟩
 
-/-! ## Interpretability Degrees -/
-
-structure InterpretabilityDegree where
-  name : String
-  degree : Nat
-  representative : Theory
-  deriving Repr
-
-def dloDegree : InterpretabilityDegree :=
-  { name := "DLO"
-    degree := 1
-    representative := emptyTheory
-  }
-
-def interpretabilityLattice : String :=
-  "The interpretability degrees form a distributive lattice under mutual interpretability. The bottom element is the empty theory; the top is the inconsistent theory."
+/-! ## Minimal and Maximal Theories -/
 
 def isMinimal (T : Theory) : Prop :=
   ∀ S, S ≲ T → T ≲ S
 
 def isMaximal (T : Theory) : Prop :=
   ∀ S, T ≲ S → S ≲ T
+
+def interpretabilityLattice : String :=
+  "The interpretability degrees form a distributive lattice under mutual interpretability. The bottom element is the empty theory; the top is the inconsistent theory."
 
 /-! ## Reduct Interpretation -/
 

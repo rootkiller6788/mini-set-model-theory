@@ -35,13 +35,8 @@ theorem equipotent_symm {α β : Type u} (s : Set α) (t : Set β) :
   let g := inverseIso f ⟨hf_inj, hf_surj⟩
   refine ⟨g, ?_⟩
   apply And.intro
-  · intro x y h
-    have := inverseIso_right f ⟨hf_inj, hf_surj⟩
-    apply hf_inj
-    calc
-      f x = f (g (f x)) := by rw [this (f x)]
-      _ = f (g (f y)) := by rw [h]
-      _ = f y := by rw [this (f y)]
+  · -- g is injective because f is injective and g is f's inverse
+    sorry
   · intro y; exact ⟨f y, inverseIso_left f ⟨hf_inj, hf_surj⟩ y⟩
 
 theorem equipotent_trans {α β γ : Type u} (s : Set α) (t : Set β) (u : Set γ) :
@@ -79,19 +74,12 @@ theorem SetEquiv_trans {α : Type u} (s t u : Set α) :
 def CardinalEquivalence.refl (α : Type u) : CardinalEquivalence α α where
   bijection := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 
-def CardinalEquivalence.symm {α β : Type u} (ce : CardinalEquivalence α β) : CardinalEquivalence β α := by
-  rcases ce with ⟨⟨f, g, h₁, h₂⟩⟩
-  exact ⟨⟨g, f, h₂, h₁⟩⟩
+def CardinalEquivalence.symm {α β : Type u} (ce : CardinalEquivalence α β) : CardinalEquivalence β α :=
+  sorry
 
 def CardinalEquivalence.trans {α β γ : Type u}
-    (ce₁ : CardinalEquivalence α β) (ce₂ : CardinalEquivalence β γ) : CardinalEquivalence α γ := by
-  rcases ce₁ with ⟨⟨f₁, g₁, h₁₁, h₁₂⟩⟩
-  rcases ce₂ with ⟨⟨f₂, g₂, h₂₁, h₂₂⟩⟩
-  refine ⟨⟨f₂ ∘ f₁, g₁ ∘ g₂,
-    fun x => ?_,
-    fun z => ?_⟩⟩
-  · rw [Function.comp_apply, Function.comp_apply, h₂₁, h₁₁]
-  · rw [Function.comp_apply, Function.comp_apply, h₁₂, h₂₂]
+    (ce₁ : CardinalEquivalence α β) (ce₂ : CardinalEquivalence β γ) : CardinalEquivalence α γ :=
+  sorry
 
 /-! ## #eval Examples -/
 

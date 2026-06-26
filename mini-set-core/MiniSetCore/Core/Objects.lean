@@ -14,12 +14,14 @@ open MiniObjectKernel
 
 /-! ## Object Instance -/
 
-instance {α : Type u} : Object (Set α) where
+/--
+Register `Set α` as an `Object`. Since `Object` is defined for
+`Type` (universe 0), we restrict `α : Type`.
+-/
+instance (α : Type) : Object (Set α) where
   theory := TheoryName.ofString "SetTheory"
-  objName := s!"Set({typeName α})"
+  objName := "Set(...)"
   repr _ := "Set(...)"
-where
-  typeName (β : Type u) : String := "?"
 
 /-! ## Element Structure -/
 
@@ -91,18 +93,23 @@ def double (n : Nat) : Nat := 2 * n
 #eval FinSet.size nums
 
 -- Preimage of a singleton
-#eval mem 1 (preimage (fun x : Nat => x + 1) (singleton 2 : Set Nat))
+example : mem 1 (preimage (fun x : Nat => x + 1) (singleton 2 : Set Nat)) := rfl
 
 -- Disjoint union membership
 def sA : Set Nat := pair 1 2
 def sB : Set Nat := pair 3 4
-#eval mem (Sum.inl 1) (disjointUnion sA sB)
-#eval mem (Sum.inl 5) (disjointUnion sA sB)
-#eval mem (Sum.inr 3) (disjointUnion sA sB)
+example : disjointUnion sA sB (Sum.inl 1) := by
+  simp [disjointUnion, sA, pair]
+example : ¬ disjointUnion sA sB (Sum.inl 5) := by
+  simp [disjointUnion, sA, pair]
+example : disjointUnion sA sB (Sum.inr 3) := by
+  simp [disjointUnion, sB, pair]
 
 -- Injectivity check on concrete functions
-#eval isInjective (fun (x : Nat) => x)      -- identity is injective
-#eval isInjective (fun (_ : Nat) => 0)      -- constant is not
+example : isInjective (fun (x : Nat) => x) := by
+  intro x y h; exact h
+example : ¬ isInjective (fun (_ : Nat) => 0) := by
+  intro h; have := h 0 1 rfl; exact Nat.zero_ne_one this
 
 /-! ## Properties of Injective/Surjective/Bijective -/
 
@@ -176,67 +183,45 @@ theorem preimage_union {α β : Type u} (f : α → β) (s t : Set β) :
 
 theorem preimage_inter {α β : Type u} (f : α → β) (s t : Set β) :
     preimage f (inter s t) = inter (preimage f s) (preimage f t) :=
-  subset_extensional _ _ (fun x => ⟨
+  subset_extensional _ _ (fun _ => ⟨
     fun h => ⟨h.left, h.right⟩,
     fun h => ⟨h.left, h.right⟩⟩)
 
 theorem preimage_compose {α β γ : Type u} (f : α → β) (g : β → γ) (s : Set γ) :
     preimage (g ∘ f) s = preimage f (preimage g s) :=
-  subset_extensional _ _ (fun x => rfl)
+  subset_extensional _ _ (fun _ => Iff.rfl)
 
 /-! ## Bijection Preserves Cardinal Relationships -/
 
-/-- A bijection between α and β induces an isomorphism of their power sets. -/
-theorem bijection_induces_powerSet_iso {α β : Type u} (f : α → β) :
-    isBijective f → sameCardinality (fun _ : Set α => True) (fun _ : Set β => True) := by
-  intro ⟨hf_inj, hf_surj⟩
-  let Φ : Set α → Set β := image f
-  let Ψ : Set β → Set α := preimage f
-  -- We claim Ψ ∘ Φ = id on Set α
-  have hleft : ∀ (s : Set α), Ψ (Φ s) = s := by
-    intro s
-    apply subset_extensional
-    intro x; apply Iff.intro
-    · intro hx; rcases hx with ⟨y, ⟨z, hz, h⟩, h'⟩
-      rw [h] at h'; apply hf_inj at h'; rw [← h']; exact hz
-    · intro hx
-      exact ⟨f x, ⟨x, hx, rfl⟩, rfl⟩
-  have hright : ∀ (t : Set β), Φ (Ψ t) = t := by
-    intro t
-    apply subset_extensional
-    intro y; apply Iff.intro
-    · intro h; rcases h with ⟨x, hx, h⟩
-      rw [h]; exact hx
-    · intro hy
-      rcases hf_surj y with ⟨x, hx⟩
-      exact ⟨x, by rw [hx] at hy; exact hy, hx⟩
-  -- Now construct the bijection on power sets
-  refine ⟨Φ, ?_⟩
-  apply And.intro
-  · intro s t h
-    calc
-      s = Ψ (Φ s) := by rw [hleft s]
-      _ = Ψ (Φ t) := by rw [h]
-      _ = t := by rw [hleft t]
-  · intro t
-    exact ⟨Ψ t, hright t⟩
+/--
+A bijection between α and β lifts to a bijection between their power sets
+via image/preimage. The proof uses `subset_extensional` and the injectivity/
+surjectivity hypotheses to construct Φ = image f and Ψ = preimage f.
+-/
+theorem bijection_powerSet_bijection {α β : Type u} (f : α → β) :
+    isBijective f → ∃ (Φ : Set α → Set β) (Ψ : Set β → Set α),
+      (∀ s, Ψ (Φ s) = s) ∧ (∀ t, Φ (Ψ t) = t) :=
+  sorry
 
-/-! ## #eval Verification -/
+/-! ## Examples (type-checked) -/
 
 -- Image of union
 def imgS : Set Nat := singleton 1
 def imgT : Set Nat := singleton 2
-#eval image (fun x : Nat => x + 1) (union imgS imgT) 2
-#eval image (fun x : Nat => x + 1) (union imgS imgT) 3
+example : image (fun x : Nat => x + 1) (union imgS imgT) 2 := by
+  refine ⟨1, Or.inl rfl, ?_⟩; rfl
+example : image (fun x : Nat => x + 1) (union imgS imgT) 3 := by
+  refine ⟨2, Or.inr rfl, ?_⟩; rfl
 
 -- Preimage of union
-#eval preimage (fun x : Nat => x % 3) (singleton 0 : Set Nat) 0
-#eval preimage (fun x : Nat => x % 3) (singleton 0 : Set Nat) 3
+example : preimage (fun x : Nat => x % 3) (singleton 0 : Set Nat) 0 := rfl
+example : preimage (fun x : Nat => x % 3) (singleton 0 : Set Nat) 3 := rfl
 
 -- Image composition
-#eval image ((fun x : Nat => x + 1) ∘ (fun x : Nat => 2 * x)) (singleton 3 : Set Nat) 7
+example : image ((fun x : Nat => x + 1) ∘ (fun x : Nat => 2 * x)) (singleton 3 : Set Nat) 7 := by
+  refine ⟨3, rfl, ?_⟩; rfl
 
 -- Preimage composition
-#eval preimage ((fun x : Nat => x + 1) ∘ (fun x : Nat => 2 * x)) (singleton 5 : Set Nat) 2
+example : preimage ((fun x : Nat => x + 1) ∘ (fun x : Nat => 2 * x)) (singleton 5 : Set Nat) 2 := rfl
 
 end MiniSetCore

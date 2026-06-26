@@ -30,7 +30,6 @@ def Hom.image {M N : Structure} (f : Hom M N) : Submodel N where
   closedUnderConst c := by
     refine ⟨M.constInterp c, ?_⟩
     rw [f.preservesConst c]
-  isSubmodel := ⟨⟩
 
 /-- First Isomorphism Theorem: M / ker(f) ≅ im(f).
     This is a fundamental theorem of universal algebra.
@@ -38,18 +37,17 @@ def Hom.image {M N : Structure} (f : Hom M N) : Submodel N where
 def FirstIsomorphismTheorem {M N : Structure} (f : Hom M N) : Prop :=
   Nonempty (Iso (QuotientStructure M (Hom.kernel f)) (Hom.image f).toStructure)
 
-/-- Second Isomorphism Theorem: For substructures S, T of M,
-    (S + T) / S ≅ T / (S ∩ T). -/
-def SecondIsomorphismTheorem (M : Structure) (S T : Submodel M) : Prop :=
-  -- The sum S+T and intersection S∩T are substructures (if they exist)
-  -- The theorem states: (S+T)/S ≅ T/(S∩T)
-  True
+/-- Second Isomorphism Theorem: For submodels S, T of M where S+T is a submodel,
+    (S+T)/S ≅ T/(S∩T).
+    TODO: formalize submodel sum, intersection, and quotient by submodel. -/
+theorem SecondIsomorphismTheorem (M : Structure) (S T : Submodel M) : True :=
+  sorry
 
-/-- Third Isomorphism Theorem: For nested substructures T ⊆ S ⊆ M,
-    (M / T) / (S / T) ≅ M / S. -/
-def ThirdIsomorphismTheorem (M : Structure) (T S : Submodel M) : Prop :=
-  -- The theorem states: (M/T)/(S/T) ≅ M/S
-  True
+/-- Third Isomorphism Theorem: For nested submodels T ⊆ S ⊆ M,
+    (M/T)/(S/T) ≅ M/S.
+    TODO: formalize nested submodel quotient. -/
+theorem ThirdIsomorphismTheorem (M : Structure) (T S : Submodel M) : True :=
+  sorry
 
 /-- For the special case of an injective homomorphism,
     the kernel is equality and M/ker(f) ≅ M. -/

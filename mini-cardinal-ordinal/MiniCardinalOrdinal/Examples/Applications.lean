@@ -87,11 +87,13 @@ def topCharacter : Cardinal := Cardinal.alephZero
 /-- The Lindelöf number L(X): minimum κ such that every open cover has a subcover of size ≤ κ -/
 def lindelofNumber : Cardinal := Cardinal.alephZero
 
-/-- Always: d(X) ≤ w(X) and c(X) ≤ d(X) for any space X -/
-theorem density_le_weight : Cardinal.le topDensity topWeight := by
+/-- Always: d(X) ≤ w(X) and c(X) ≤ d(X) for any space X.
+These are the concrete instantiations for the topological invariants
+defined in CardinalTheory (which proves the general case with parameters). -/
+theorem top_density_le_weight : Cardinal.le topDensity topWeight := by
   unfold Cardinal.le; simp
 
-theorem cellularity_le_density : Cardinal.le topCellularity topDensity := by
+theorem top_cellularity_le_density : Cardinal.le topCellularity topDensity := by
   unfold Cardinal.le; simp
 
 /-- The weight of ℝ is ℵ₀ (countable basis: intervals with rational endpoints) -/
@@ -193,19 +195,26 @@ end ComputerScienceApplication
 section ForcingApplication
 
 /-- **Continuum Hypothesis (CH)**: 2^{ℵ₀} = ℵ₁.
+CH is defined in Core/Laws as `GCH Cardinal.alephZero`. Here we provide the
+alternative equivalent formulation 2^{ℵ₀} = ℵ₁.
 Independent of ZFC (Gödel 1938, Cohen 1963). -/
-def CH : Prop := Cardinal.eq (Cardinal.exp Cardinal.alephZero ⟨1⟩) Cardinal.alephOne
+def CH_alt : Prop := Cardinal.eq (Cardinal.exp Cardinal.alephZero ⟨1⟩) Cardinal.alephOne
+
+/-- CH_alt is equivalent to CH from Core/Laws (by definition of GCH). -/
+theorem CH_alt_iff_CH : CH_alt ↔ CH := by
+  unfold CH_alt CH GCH continuumFunction
+  simp
 
 /-- **Martin's Axiom (MA)**: A forcing axiom implying many cardinal invariants equal 2^{ℵ₀} -/
-def martinsAxiom : Prop := True
+def martinsAxiom_alt : Prop := True
 
 /-- Under MA + ¬CH, 2^{ℵ₀} > ℵ₁ -/
-def maNotCH : Prop := martinsAxiom ∧ ¬ CH
+def maNotCH : Prop := martinsAxiom_alt ∧ ¬ CH
 
 /-- **Proper Forcing Axiom (PFA)**: A stronger axiom implying 2^{ℵ₀} = ℵ₂ -/
-def PFA : Prop := True
+def PFA_alt : Prop := True
 
-theorem PFA_implies_continuum_is_alephTwo : PFA → Cardinal.eq (Cardinal.exp Cardinal.alephZero ⟨1⟩) Cardinal.alephTwo := by
+theorem PFA_implies_continuum_is_alephTwo : PFA_alt → Cardinal.eq (Cardinal.exp Cardinal.alephZero ⟨1⟩) Cardinal.alephTwo := by
   intro h
   unfold Cardinal.eq; simp
 

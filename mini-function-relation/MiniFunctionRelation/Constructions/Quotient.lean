@@ -11,13 +11,17 @@ The quotient of a structure by a congruence relation: domain elements
 are equivalence classes, and interpretations are well-defined on classes.
 -/
 
+/-- A congruence relation on a structure: an equivalence relation that
+    respects the predicate interpretations elementwise.
+    (Constants are automatically respected by reflexivity.) -/
 structure Congruence (M : Structure) where
   rel : M.domain → M.domain → Prop
   isEquiv : Equivalence rel
-  respectsConst : ∀ (c : Nat) (x y : M.domain), rel x y → M.constInterp c = M.constInterp c
   respectsPred : ∀ (p : Nat) (xs ys : List M.domain),
-    List.length xs = List.length ys → (∀ i, rel (xs.get? i |>.getD (M.constInterp 0))
-      (ys.get? i |>.getD (M.constInterp 0))) → True
+    List.length xs = List.length ys →
+    (∀ i, rel (xs.get? i |>.getD (M.constInterp 0))
+      (ys.get? i |>.getD (M.constInterp 0))) →
+    M.predInterp p xs → M.predInterp p ys
 
 -- Quotient structure: domain is the set of equivalence classes
 def QuotientStructure (M : Structure) (r : M.domain → M.domain → Prop) [Equivalence r] : Structure where

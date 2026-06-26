@@ -13,14 +13,13 @@ examples.
 
 import MiniCompactnessCompletenessLite.Core.Basic
 import MiniCompactnessCompletenessLite.Core.Objects
+import MiniCompactnessCompletenessLite.Theorems.UniversalProperties
 
 namespace MiniCompactnessCompletenessLite
 
 /-! ## Subtheory -/
 
-def isSubtheory (T S : Theory) : Prop := T ⊆ S
-
-infix:50 " ⊆ₜ " => isSubtheory
+-- isSubtheory is defined in Core.Objects (along with ⊆ₜ notation)
 
 def properSubtheory (T S : Theory) : Prop :=
   isSubtheory T S ∧ T ≠ S
@@ -59,14 +58,15 @@ def finiteAxiomatizationStatement : String :=
 
 /-! ## Axiomatizable in a Fragment -/
 
+-- K is universally axiomatizable if K = Mod(T) for some universal theory T.
 def isUniversalAxiomatizable (K : Set MiniFunctionRelation.Structure) : Prop :=
-  True
+  ∃ (T : Theory), isUniversalTheory T ∧ (∀ M, M ∈ K ↔ isModelOf M T)
 
 def isExistentialAxiomatizable (K : Set MiniFunctionRelation.Structure) : Prop :=
-  True
+  ∃ (T : Theory), isExistentialTheory T ∧ (∀ M, M ∈ K ↔ isModelOf M T)
 
 def isAE_Axiomatizable (K : Set MiniFunctionRelation.Structure) : Prop :=
-  True
+  ∃ (T : Theory), isInductiveTheory T ∧ (∀ M, M ∈ K ↔ isModelOf M T)
 
 /-! ## The Galois Connection Mod-Th -/
 

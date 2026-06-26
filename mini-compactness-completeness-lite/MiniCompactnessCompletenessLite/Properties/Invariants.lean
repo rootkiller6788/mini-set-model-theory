@@ -15,12 +15,15 @@ namespace MiniCompactnessCompletenessLite
 
 /-! ## Categoricity -/
 
+-- T is κ-categorical if all models of T of size κ are isomorphic.
+-- Proper formalization requires a notion of "size/cardinality".
+-- TODO: Replace `True` with proper cardinality-bounded isomorphism.
 def isκCategorical (T : Theory) (κ : String) : Prop :=
   True
 
-def isCategoricalInPower (T : Theory) (κ : Nat) : Prop :=
-  True
+-- isCategoricalInPower is defined in Properties.Categoricity
 
+-- Uncountably categorical: categorical in some uncountable cardinal.
 def isUncountablyCategorical (T : Theory) : Prop :=
   True
 
@@ -147,47 +150,61 @@ lemma qe_implies_modelComplete (T : Theory) : String :=
 
 /-! ## Decidability -/
 
+-- A theory T is decidable if the set of its logical consequences is recursive.
+-- Proper formalization requires a computability framework (Turing machines, etc.).
+-- TODO: Formalize decidability when computability infrastructure is available.
+axiom isDecidable_axiom (T : Theory) : Prop
+
 def isSemanticallyDecidable (T : Theory) : Prop :=
-  True
+  isDecidable_axiom T
 
-def decidableTheories : List String :=
-  ["DLO", "ACF0", "RCF", "Presburger Arithmetic", "Boolean Algebra"]
-
-def undecidableTheories : List String :=
-  ["Peano Arithmetic", "ZFC Set Theory", "Group Theory", "Field Theory", "Robinson's Q"]
+-- decidableTheories and undecidableTheories are defined in Bridges.ToComputation
 
 def decidabilityStatement : String :=
   "A theory is decidable if the set of its logical consequences is recursive. Equivalently, there is an algorithm that determines whether T ⊨ φ for any given φ."
 
 /-! ## O-Minimality -/
 
+-- A theory is o-minimal if every definable subset of the line is a finite union of intervals.
+-- Proper formalization requires an ordering and interval definitions.
+-- TODO: Formalize o-minimality with order topology infrastructure.
+axiom isOMinimal_axiom (T : Theory) : Prop
+
 def isOMinimal (T : Theory) : Prop :=
-  True
+  isOMinimal_axiom T
 
-def oMinimalityStatement : String :=
-  "An o-minimal structure is a linearly ordered structure where every definable subset of the line is a finite union of intervals and points. O-minimal theories have many nice geometric properties."
+-- oMinimalityStatement is defined in Bridges.ToGeometry
 
-def oMinimalExamples : List String :=
-  ["RCF (real closed fields)", "R_exp (real exponentiation, Wilkie 1996)", "R_an (restricted analytic functions, van den Dries)"]
+-- oMinimalExamples is defined in Bridges.ToGeometry
 
 /-! ## NIP (No Independence Property) -/
 
+-- A formula φ(x;y) has the independence property if for every n, there exist a_i, b_S for S ⊆ {1,...,n}
+-- such that φ(a_i; b_S) iff i ∈ S. Proper formalization requires an infinite sequence infrastructure.
+-- TODO: Formalize when Shelah-style combinatorial infrastructure is available.
+axiom hasIndependenceProperty_axiom (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop
+
 def hasIndependenceProperty (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop :=
-  True
+  hasIndependenceProperty_axiom T φ
 
 def isNIP (T : Theory) : Prop :=
-  True
+  ¬ ∃ (φ : MiniLogicKernel.PredFormula), hasIndependenceProperty T φ
 
 def nipStatement : String :=
   "A theory is NIP if no formula has the independence property. NIP theories are a broad class including all stable theories plus o-minimal, C-minimal, and more."
 
 /-! ## NFCP (No Finite Cover Property) -/
 
+-- NFCP (no finite cover property) is intermediate between stable and superstable.
+-- Proper formalization requires definable sets and forking infrastructure.
+-- TODO: Formalize when forking calculus is available.
+axiom hasFiniteCoverProperty_axiom (T : Theory) : Prop
+
 def hasFiniteCoverProperty (T : Theory) : Prop :=
-  True
+  hasFiniteCoverProperty_axiom T
 
 def isNFCP (T : Theory) : Prop :=
-  True
+  ¬ hasFiniteCoverProperty T
 
 def nfcpStatement : String :=
   "NFCP (no finite cover property) is a property intermediate between stable and superstable. It characterizes the elimination of imaginaries."

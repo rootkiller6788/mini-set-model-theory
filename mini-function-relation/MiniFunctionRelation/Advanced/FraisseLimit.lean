@@ -16,8 +16,9 @@ finite substructures. Key examples: random graph, rational order.
 def Age (M : Structure) : Set Structure :=
   {N | Fintype N.domain}
 
+/-- The hereditary property (HP): if M ∈ K and N embeds into M, then N ∈ K. -/
 def HasHereditaryProperty (K : Set Structure) : Prop :=
-  ∀ (M N : Structure), M ∈ K → (∃ (f : Embedding N M), True) → N ∈ K
+  ∀ (M N : Structure), M ∈ K → Nonempty (Embedding N M) → N ∈ K
 
 def HasJointEmbeddingProperty (K : Set Structure) : Prop :=
   ∀ (A B : Structure), A ∈ K → B ∈ K →

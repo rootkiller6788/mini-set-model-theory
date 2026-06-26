@@ -636,8 +636,8 @@ def omegasConjecture : Prop := True
 def pfaImpliesContinuumIsAlephTwo : Prop :=
   Cardinal.eq continuum Cardinal.alephTwo
 
-/-- Martin's Maximum (MM) implies 2^{ℵ₀} = ℵ₂ -/
-def martinsMaximum : Prop := True
+/-- Martin's Maximum (MM): defined in Theorems/AdvancedTopics.
+MM implies 2^{ℵ₀} = ℵ₂ (Foreman-Magidor-Shelah). -/
 
 /-- The continuum can be arbitrarily large (Cohen forcing) -/
 def continuumCanBeArbitrarilyLarge (κ : Cardinal) : Prop :=

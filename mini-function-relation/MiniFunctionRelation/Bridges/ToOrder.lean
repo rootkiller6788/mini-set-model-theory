@@ -12,8 +12,8 @@ Connects Structure to order theory. Many structures carry a natural
 partial order; order-preserving homomorphisms are a special case.
 -/
 
--- A structure with a designated order predicate (pred 0 is the order)
-def OrderedStructure (M : Structure) : Prop := True
+-- A structure carries a designated order predicate at index 0
+-- The actual order axioms are captured by `IsPoset` below.
 
 -- Order-preserving homomorphism
 def IsOrderPreserving {M N : Structure} (f : Hom M N) : Prop :=

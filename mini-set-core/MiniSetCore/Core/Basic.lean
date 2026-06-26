@@ -49,7 +49,7 @@ instance : HasSubset (Set α) where
 
 /-! ## Relation and Function Classifiers -/
 
-def isRelation {α β : Type u} (r : Set (α × β)) : Prop := True
+def isRelation {α β : Type u} (_ : Set (α × β)) : Prop := True
 
 def isFunction {α β : Type u} (f : Set (α × β)) : Prop :=
   ∀ x y₁ y₂, f (x, y₁) → f (x, y₂) → y₁ = y₂
@@ -73,6 +73,26 @@ def FinSet.mem {α : Type u} [DecidableEq α] (x : α) (fs : FinSet α) : Bool :
 def FinSet.size {α : Type u} [DecidableEq α] : FinSet α → Nat
   | .empty => 0
   | .insert _ rest => 1 + size rest
+
+/-! ## Extensionality -/
+
+/--
+Set extensionality: two sets are equal iff they have
+the same elements. This is the fundamental principle of
+set equality.
+-/
+theorem subset_extensional {α : Type u} (s t : Set α) :
+    (∀ x, s x ↔ t x) → s = t :=
+  fun h => funext (fun x => propext (h x))
+
+/--
+Subset antisymmetry: if s ⊆ t and t ⊆ s, then s = t.
+This is a corollary of extensionality.
+-/
+theorem subset_antisymm {α : Type u} (s t : Set α) :
+    s ⊆ t → t ⊆ s → s = t :=
+  fun h₁ h₂ => subset_extensional s t
+    (fun x => ⟨h₁ x, h₂ x⟩)
 
 /-! ## Example -/
 

@@ -25,12 +25,14 @@ def isStableInκ (T : Theory) (κ : String) : Prop :=
 
 /-! ## Order Property -/
 
+-- T has the order property if there exists a formula φ(x̄,ȳ) such that in some model of T,
+-- there are infinite sequences (aᵢ), (bⱼ) with φ(aᵢ,bⱼ) iff i < j.
+-- Proper formalization requires infinite sequences and ordinal-indexed families.
+-- TODO: Formalize with infinite sequence infrastructure.
+axiom hasOrderProperty_axiom (T : Theory) : Prop
+
 def hasOrderProperty (T : Theory) : Prop :=
-  -- There exists a formula φ(x̄, ȳ) and infinite sequences (ā_i), (b̄_j) such that
-  -- φ(ā_i, b̄_j) holds iff i < j. This characterizes instability.
-  -- Full formalization requires infinite sequences and cardinality infrastructure.
-  ∃ (φ : MiniLogicKernel.PredFormula),
-    True
+  hasOrderProperty_axiom T
 
 def orderPropertyStatement : String :=
   "A theory is unstable iff it has the order property: there exists a formula φ(x̄, ȳ) and sequences (ā_i), (b̄_j) such that ⊨ φ(ā_i, b̄_j) iff i < j."
@@ -65,24 +67,33 @@ def superstableProperty : String :=
 
 /-! ## Simple Theories -/
 
-def isSimpleTheory (T : Theory) : Prop :=
-  -- A theory is simple if no formula has the tree property
-  ¬ (hasTreeProperty T)
+-- T has the tree property if some formula has the k-tree property for all k.
+-- TODO: Formalize with combinatorial tree infrastructure.
+axiom hasTreeProperty_axiom (T : Theory) : Prop
 
 def hasTreeProperty (T : Theory) : Prop :=
-  ∃ (φ : MiniLogicKernel.PredFormula), True
+  hasTreeProperty_axiom T
+
+def isSimpleTheory (T : Theory) : Prop :=
+  ¬ hasTreeProperty T
 
 /-! ## NIP and NSOP Theories -/
 
+-- A formula φ(x;y) has the independence property in T if...
+-- TODO: Formalize with indiscernible sequence infrastructure.
+axiom hasIndependencePropertyFormula_axiom (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop
+
 def hasIndependencePropertyFormula (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop :=
-  True
+  hasIndependencePropertyFormula_axiom T φ
 
 def isNIPTheory (T : Theory) : Prop :=
-  -- NIP: no formula has the independence property
   ¬ ∃ (φ : MiniLogicKernel.PredFormula), hasIndependencePropertyFormula T φ
 
+-- A formula has the strict order property in T if...
+axiom hasStrictOrderPropertyFormula_axiom (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop
+
 def hasStrictOrderPropertyFormula (T : Theory) (φ : MiniLogicKernel.PredFormula) : Prop :=
-  True
+  hasStrictOrderPropertyFormula_axiom T φ
 
 def isNSOPTheory (T : Theory) : Prop :=
   ¬ ∃ (φ : MiniLogicKernel.PredFormula), hasStrictOrderPropertyFormula T φ

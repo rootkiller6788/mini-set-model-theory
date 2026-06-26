@@ -10,17 +10,6 @@ import MiniSetCore.Core.Objects
 
 namespace MiniSetCore
 
-/-! ## Extensionality -/
-
-theorem subset_extensional {α : Type u} (s t : Set α) :
-    (∀ x, s x ↔ t x) → s = t :=
-  fun h => funext (fun x => propext (h x))
-
-theorem subset_antisymm {α : Type u} (s t : Set α) :
-    s ⊆ t → t ⊆ s → s = t :=
-  fun h₁ h₂ => subset_extensional s t
-    (fun x => ⟨h₁ x, h₂ x⟩)
-
 /-! ## Empty Set Laws -/
 
 theorem empty_subset {α : Type u} (s : Set α) : emptySet α ⊆ s :=
@@ -106,64 +95,63 @@ theorem distrib_inter_over_union {α : Type u} (s t u_ : Set α) :
     | Or.inl h => ⟨h.left, Or.inl h.right⟩
     | Or.inr h => ⟨h.left, Or.inr h.right⟩⟩)
 
-/-! ## De Morgan's Laws -/
+/-! ## De Morgan's Laws (Complement) -/
 
+/-- Complement of a set relative to the universe. -/
+def compl {α : Type u} (s : Set α) : Set α := fun x => ¬ s x
+
+/-- De Morgan: complement of union = intersection of complements. -/
 theorem deMorgan_union {α : Type u} (s t : Set α) :
-    diff (union s t) = inter (diff s) (diff t) := by
+    compl (union s t) = inter (compl s) (compl t) := by
   funext x; apply propext; apply Iff.intro
-  · intro h; rcases h with ⟨h, hn⟩
+  · intro h
     refine ⟨?_, ?_⟩
-    · intro hs'; apply hn; apply Or.inl; exact hs'
-    · intro ht'; apply hn; apply Or.inr; exact ht'
-  · intro h; rcases h with ⟨h₁, h₂⟩
-    refine ⟨?_, ?_⟩
-    · intro hst; rcases hst with hs | ht
-      · exact h₁ hs
-      · exact h₂ ht
-    · intro hst; rcases hst with hs | ht
-      · exact h₁ hs
-      · exact h₂ ht
+    · intro hs; apply h; apply Or.inl; exact hs
+    · intro ht; apply h; apply Or.inr; exact ht
+  · intro h
+    rcases h with ⟨hns, hnt⟩
+    intro hu
+    rcases hu with (hs | ht)
+    · exact hns hs
+    · exact hnt ht
 
+/-- De Morgan: complement of intersection = union of complements. -/
 theorem deMorgan_inter {α : Type u} (s t : Set α) :
-    diff (inter s t) = union (diff s) (diff t) := by
+    compl (inter s t) = union (compl s) (compl t) := by
   funext x; apply propext; apply Iff.intro
-  · intro h; rcases h with ⟨h, hn⟩
+  · intro h
     by_cases hs : s x
-    · apply Or.inr; exact ⟨hs, fun ht => hn ⟨hs, ht⟩⟩
-    · apply Or.inl; exact ⟨hs, fun ht => hn ⟨hs, ht⟩⟩
-  · intro h; rcases h with (h | h)
-    · rcases h with ⟨hn, hx⟩
-      refine ⟨fun h => hn h.left, ?_⟩
-      intro h; apply hn; exact h.left
-    · rcases h with ⟨hn, hx⟩
-      refine ⟨fun h => hx h.right, ?_⟩
-      intro h; apply hx; exact h.right
+    · apply Or.inr; intro ht; apply h; exact ⟨hs, ht⟩
+    · apply Or.inl hs
+  · intro h
+    rcases h with (hns | hnt)
+    · intro hi; exact hns hi.left
+    · intro hi; exact hnt hi.right
 
-/-! ## #eval Examples -/
+/-! ## #eval / Example Checks -/
 
 -- Verify union commutes on concrete sets
 def s1 : Set Nat := singleton 10
 def s2 : Set Nat := singleton 20
-#eval mem 10 (union s1 s2)
-#eval mem 10 (union s2 s1)
-#eval mem 20 (union s1 s2)
+example : mem 10 (union s1 s2) := by simp [mem, union, s1, s2, singleton]
+example : mem 10 (union s2 s1) := by simp [mem, union, s1, s2, singleton]
+example : mem 20 (union s1 s2) := by simp [mem, union, s1, s2, singleton]
 
 -- Subset antisymmetry example
-#eval subset (singleton 5 : Set Nat) (pair 5 6)
-#eval subset (pair 5 6 : Set Nat) (singleton 5)
+example : subset (singleton 5 : Set Nat) (pair 5 6) := by
+  intro x h; simp [pair, singleton] at h ⊢; subst h; simp [pair]
+example : ¬ subset (pair 5 6 : Set Nat) (singleton 5) := by
+  intro h; have := h 6 (by simp [pair]); simp [singleton] at this
 
 -- Empty subset of any set
-#eval empty_subset (singleton 42 : Set Nat)
+#check empty_subset (singleton 42 : Set Nat)
 
--- De Morgan check: element not in union means not in both
+-- De Morgan check: using compl properly
 def testSet : Set Nat := fun n => n < 3
-#eval diff (pair 1 2) (singleton 1 : Set Nat) 2
-#eval diff (pair 1 2) (singleton 1 : Set Nat) 1
-
-/-! ## Complement (local definition to avoid circular imports) -/
-
-/-- Complement of a set relative to the universe. -/
-def compl {α : Type u} (s : Set α) : Set α := fun x => ¬ s x
+example : diff (pair 1 2) (singleton 1 : Set Nat) 2 := by
+  simp [diff, pair, singleton]
+example : ¬ diff (pair 1 2) (singleton 1 : Set Nat) 1 := by
+  simp [diff, pair, singleton]
 
 /-! ## Absorption Laws -/
 
@@ -233,7 +221,7 @@ theorem diff_union {α : Type u} (s t u_ : Set α) :
 theorem diff_inter {α : Type u} (s t u_ : Set α) :
     diff s (inter t u_) = union (diff s t) (diff s u_) :=
   subset_extensional _ _ (fun x => ⟨
-    fun h =>
+    fun h => by
       by_cases ht : t x
       · apply Or.inr; exact ⟨h.left, fun hu => h.right ⟨ht, hu⟩⟩
       · apply Or.inl; exact ⟨h.left, ht⟩,
@@ -253,14 +241,14 @@ theorem mem_inter_iff {α : Type u} (s t : Set α) (x : α) :
 
 theorem mem_powerSet_iff {α : Type u} (s t : Set α) :
     powerSet s t ↔ t ⊆ s :=
-  ⟨fun h x ht => h x ht, fun h x ht => h ht⟩
+  ⟨id, id⟩
 
 theorem subset_refl {α : Type u} (s : Set α) : s ⊆ s :=
   fun _ h => h
 
 theorem subset_trans {α : Type u} (s t u_ : Set α) :
     s ⊆ t → t ⊆ u_ → s ⊆ u_ :=
-  fun hst htu x hx => htu (hst hx)
+  fun hst htu x hx => htu x (hst x hx)
 
 /-! ## Inclusion-Exclusion Principle (for two sets) -/
 
@@ -273,28 +261,31 @@ theorem finSet_union_size {α : Type u} [DecidableEq α] (fs ft : FinSet α) :
     FinSet.size fs + FinSet.size ft = FinSet.size fs + FinSet.size ft := rfl
   -- The real inclusion-exclusion requires a disjoint merge FinSet.
 
-/-! ## #eval Verification of New Laws -/
+/-! ## Example Verification of New Laws -/
 
--- Absorption
+-- Absorption (type-check the theorems)
 def testUnionAbsorb : Set Nat := pair 1 2
 def testInterPart : Set Nat := singleton 1
-#eval union_absorb_inter testUnionAbsorb testInterPart
+#check union_absorb_inter testUnionAbsorb testInterPart
 
--- Double complement
-#eval complement_complement (singleton 5 : Set Nat)
+-- Double complement (type-check the theorem)
+#check complement_complement (singleton 5 : Set Nat)
 
 -- Difference laws
 def s_test : Set Nat := pair 1 2
 def t_test : Set Nat := singleton 1
-#eval mem 2 (diff s_test t_test)
-#eval mem 1 (diff s_test t_test)
+example : mem 2 (diff s_test t_test) := by
+  simp [mem, diff, s_test, t_test, pair, singleton]
+example : ¬ mem 1 (diff s_test t_test) := by
+  simp [mem, diff, s_test, t_test, pair, singleton]
 
--- Diff union and diff inter
-#eval diff_union (pair 1 2 : Set Nat) (singleton 1) (singleton 2) 1
-#eval diff_union (pair 1 2 : Set Nat) (singleton 1) (singleton 2) 2
+-- Diff union: type-check the theorem
+#check diff_union (pair 1 2 : Set Nat) (singleton 1) (singleton 2)
 
 -- Subset transitivity
-#eval subset_trans (singleton 1 : Set Nat) (pair 1 2 : Set Nat) (pair 1 2 : Set Nat)
-    (fun _ h => Or.inl h) (fun _ h => h) 1
+example : (singleton 1 : Set Nat) ⊆ (pair 1 2 : Set Nat) := by
+  intro x h; simp [singleton] at h; subst h; simp [pair]
+example : (pair 1 2 : Set Nat) ⊆ (pair 1 2 : Set Nat) := by
+  intro x h; exact h
 
 end MiniSetCore

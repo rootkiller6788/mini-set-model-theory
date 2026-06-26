@@ -148,10 +148,12 @@ def isPreservedUnderHomomorphism (φ : MiniLogicKernel.PredFormula) : Prop :=
       (predInterp := N.predInterp) (constInterp := N.constInterp) φ []
 
 lemma positiveSentence_preserved_under_hom
-    (φ : MiniLogicKernel.PredFormula) (hPos : isPositiveSentence φ) : True := by
-  -- Positive sentences are preserved under homomorphisms (Lyndon's theorem)
-  -- The proof requires induction on formula structure
-  trivial
+    (φ : MiniLogicKernel.PredFormula) (hPos : isPositiveSentence φ) :
+    isPreservedUnderHomomorphism φ := by
+  -- Positive sentences are preserved under homomorphisms (Lyndon's theorem).
+  -- The proof requires induction on formula structure, using the fact that
+  -- positive formulas (no ¬) are monotone under homomorphisms.
+  sorry
 
 /-! ## Submodel via Inclusion Hom -/
 

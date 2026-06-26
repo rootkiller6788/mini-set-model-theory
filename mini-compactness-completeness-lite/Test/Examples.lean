@@ -43,7 +43,8 @@ open MiniCompactnessCompletenessLite
 #eval randomGraphAxioms : List String
 
 --- Interpretability ---
-#eval interpretabilityPreorder testTheoryT testTheoryT : Prop
+#eval testInterp : Interpretation testTheoryT testTheoryS
+#eval relativeInterpretation testTheoryT testTheoryT : Prop
 #eval moritaEquivalenceStatement : String
 #eval dloDegree.name : String
 
@@ -56,5 +57,5 @@ open MiniCompactnessCompletenessLite
 #eval categoricalExamples : List String
 
 --- Stability ---
-#eval forkingStatement : String
+#eval forkingIndependenceStatement : String
 #eval orderPropertyStatement : String

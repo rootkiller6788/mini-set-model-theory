@@ -113,8 +113,13 @@ structure BackForthSystem (M N : MiniFunctionRelation.Structure) where
     (∀ x ∈ p.dom, q.map x = p.map x) ∧ b ∈ q.codom
 
 lemma backAndForth_exists (M N : MiniFunctionRelation.Structure)
-    (hBF : BackForthSystem M N) : True := by
-  trivial
+    (hBF : BackForthSystem M N) (hCountableM : Countable M.domain) (hCountableN : Countable N.domain) :
+    M ≅ N := by
+  -- The classical back-and-forth theorem: if countable structures M, N admit a
+  -- back-and-forth system of partial isomorphisms, then M ≅ N.
+  -- Proof: enumerate both domains as sequences, then alternate extending the
+  -- partial isomorphism using the forth and back conditions.
+  sorry
 
 def backAndForthStatement : String :=
   "Two countable structures are isomorphic iff there exists a back-and-forth system of finite partial isomorphisms between them."

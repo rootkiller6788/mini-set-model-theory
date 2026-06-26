@@ -105,52 +105,18 @@ def classifyComplexity (L : Language) : LanguageComplexity :=
 
 /-! ## Invariance Under Signature Isomorphism -/
 
-/-- The cardinality of a signature is invariant under signature isomorphism.
-    If S ≅ T via i, then |S| = |T|. -/
-theorem cardinalityInvariant (S T : Signature) (i : SigIso S T) : True := trivial
-
-/-- The arity supremum is invariant under signature isomorphism.
-    If S ≅ T, then they have the same maximum arity. -/
-theorem aritySupInvariant (S T : Signature) (i : SigIso S T) : True := trivial
-
-/-- The property of being relational is invariant under signature isomorphism. -/
-theorem relationalInvariant (S T : Signature) (i : SigIso S T) : True := trivial
-
-/-- The property of being algebraic is invariant under signature isomorphism. -/
-theorem algebraicInvariant (S T : Signature) (i : SigIso S T) : True := trivial
-
-/-! ## Invariants Under Language Equivalence -/
-
-/-- Definitional equivalence preserves cardinality of the signature. -/
-theorem defEquivPreservesCardinality (L M : Language) (h : DefinitionalEquivalence L M) : True := trivial
-
-/-- Morita equivalence preserves many language invariants: finiteness,
-    relationality, and countable cardinality are all Morita-invariant. -/
-theorem moritaInvariants (L M : Language) (h : MoritaEquivalence L M) : True := trivial
-
-/-- Bi-interpretability preserves the number of definable sets in each
-    dimension (up to definable bijection). -/
-theorem biInterpretabilityInvariants (L M : Language) (h : BiInterpretation L M) : True := trivial
+-- TODO: formalize invariance theorems for cardinality, aritySup, relational, algebraic
+-- under SigIso.  These require a proper notion of symbol-counting on signatures
+-- that respects the isomorphism mapping.
 
 /-! ## Language Spectrum -/
 
-/-- The spectrum of a language L is the set of possible cardinalities
-    of finite L-structures. For a finite relational language, the spectrum
-    is all positive integers (every n has some L-structure of size n). -/
-theorem languageSpectrum (L : Language) : True := trivial
-
-/-- The finite spectrum problem: given a first-order sentence φ, its spectrum
-    is the set of cardinalities of finite models of φ. Scholz's problem (1952)
-    asked whether the class of spectra is closed under complement.
-    Solved by Jones and Selman (1974): Spectra = NEXPTIME. -/
-theorem finiteSpectrumProblem : String :=
-  "Scholz's Problem: Is the class of spectra closed under complement? Equivalent to NEXPTIME = co-NEXPTIME (open until resolved by complexity theory). Spectra of first-order sentences = NTIME(2^{O(n)})."
-
-/-- Asser's Problem: Is the complement of every spectrum also a spectrum?
-    This is equivalent to NEXPTIME = co-NEXPTIME. If P = NP, then yes;
-    but this remains open. -/
-theorem asserProblem : String :=
-  "Asser's Problem (1955): Is the class of spectra closed under complement? Equivalent to NEXPTIME = co-NEXPTIME, a major open problem in complexity theory."
+/-- A finite L-structure is an L-structure whose domain is finite.
+    The spectrum of a sentence φ is the set of sizes of its finite models. -/
+structure FiniteModel (L : Language) where
+  structure : MiniFunctionRelation.Structure
+  finiteDomain : Fintype structure.domain
+  deriving Repr
 
 /-! ## #eval examples -/
 
@@ -175,9 +141,5 @@ theorem asserProblem : String :=
 #eval s!"trivialSignature complexity: {signatureComplexity trivialSignature}"
 #eval s!"trivialLanguage classification: {classifyComplexity trivialLanguage}"
 #eval s!"emptyLanguage classification: {classifyComplexity emptyLanguage}"
-
--- Spectrum problems
-#eval finiteSpectrumProblem
-#eval asserProblem
 
 end MiniLanguageStructure

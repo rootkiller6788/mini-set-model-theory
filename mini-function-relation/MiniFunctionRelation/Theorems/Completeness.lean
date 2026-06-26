@@ -40,22 +40,19 @@ def henkinTheorem (T : Theory) [Inhabited (Sentence)] : Prop :=
 def henkinExtension (T : Theory) : Theory :=
   T
 
-/-- A Henkin theory is one where every existential sentence has a witness. -/
+/-- A Henkin theory is one where for every existential theorem ∃v.ψ(v),
+    there is a constant c such that ψ(c) is also a theorem.
+    TODO: formalize the constant witness property. -/
 def IsHenkinTheory (T : Theory) : Prop :=
-  ∀ (φ : Sentence),
-    (∃ (v : Nat) (ψ : Formula),
-      φ = Formula.ex v ψ ∧
-      (∀ (M : Structure), Structure.satisfiesTheory M T →
-        Structure.satisfiesSentence M φ →
-        ∃ (c : Nat),
-          M.satisfiesSentence M (ψ.subst v (Term.var c)))) → True
+  sorry
 
 /-- The term model of a maximally consistent Henkin theory:
-    domain = closed terms of the language, with equality as
-    term-equivalence modulo the theory. -/
+    domain = closed terms, equality = provable equality modulo T,
+    predicate interpretation = provability in T.
+    TODO: formalize the proper term model construction. -/
 def termModel (T : Theory) (h_henkin : IsHenkinTheory T) : Structure where
   domain := Term
-  predInterp p args := True
+  predInterp p args := sorry
   constInterp c := Term.var c
 
 /-- Lindenbaum's lemma: every consistent theory can be extended

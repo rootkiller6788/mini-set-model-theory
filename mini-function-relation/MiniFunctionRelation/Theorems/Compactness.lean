@@ -41,14 +41,11 @@ def arbitrarilyLargeFiniteImpliesInfinite (T : Theory) : Prop :=
     Fintype M.domain ∧ Fintype.card M.domain ≥ n) →
   ∃ (M : Structure), Structure.satisfiesTheory M T ∧ Infinite M.domain
 
-/-- Compactness for propositional logic (simpler, can be proved by
-    compactness of the product space {0,1}^I by Tychonoff's theorem). -/
+/-- Compactness for propositional logic: if every finite subset of Γ
+    is satisfiable, then Γ is satisfiable.
+    TODO: formalize propositional valuation and satisfiability. -/
 def PropositionalCompactness : Prop :=
-  ∀ (Γ : Set Formula),
-    (∀ (Δ : Finset Formula), (Δ : Set Formula) ⊆ Γ →
-      ∃ (v : Nat → Bool), -- propositional valuation
-        ∀ (φ : Formula), φ ∈ (Δ : Set Formula) → True) →
-    ∃ (v : Nat → Bool), ∀ (φ : Formula), φ ∈ Γ → True
+  sorry
 
 /-- Applications of compactness:
     1. If T has models of every finite cardinality, T has an infinite model
@@ -61,15 +58,10 @@ def infiniteModelExample (T : Theory) (h : ∀ (n : Nat), ∃ (M : Structure),
     Structure.satisfiesTheory M T ∧ Fintype M.domain ∧ Fintype.card M.domain = n) : Prop :=
   ∃ (M : Structure), Structure.satisfiesTheory M T ∧ Infinite M.domain
 
-/-- The theory of infinite sets (no structure axioms, just "there are at least n elements"
-    for each n) has an infinite model. -/
+/-- The sentence "there exist at least n distinct elements".
+    TODO: formalize the proper family of sentences with n distinct variables. -/
 def atLeastNElements (n : Nat) : Sentence :=
-  match n with
-  | 0 => Formula.top
-  | 1 => Formula.ex 0 (Formula.eq (Term.var 0) (Term.var 0))
-  | n+1 => Formula.ex 0 (Formula.and
-    (Formula.not (Formula.eq (Term.var 0) (Term.var 0)))
-    (Formula.not (Formula.eq (Term.var 0) (Term.var 0))))
+  sorry
 
 def theoryOfInfiniteSet : Theory :=
   Set.range atLeastNElements

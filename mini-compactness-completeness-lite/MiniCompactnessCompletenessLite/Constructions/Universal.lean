@@ -63,11 +63,19 @@ def coproductProperty : String :=
 
 /-! ## Coherent / Geometric Theories -/
 
+-- A coherent/geometric formula is built from atomic formulas using ∧, ∨, ∃, and ⊤, ⊥.
+-- Proper formalization requires syntactic classification of formula structure.
+-- TODO: Formalize when syntactic analysis of formulas is available.
+
+axiom isCoherentTheory_axiom (T : Theory) : Prop
+
 def isCoherentTheory (T : Theory) : Prop :=
-  True
+  isCoherentTheory_axiom T
+
+axiom isRegularTheory_axiom (T : Theory) : Prop
 
 def isRegularTheory (T : Theory) : Prop :=
-  True
+  isRegularTheory_axiom T
 
 /-! ## Classifying Topos Connection -/
 

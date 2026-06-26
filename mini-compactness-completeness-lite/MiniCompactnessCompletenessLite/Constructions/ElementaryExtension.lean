@@ -50,15 +50,9 @@ lemma elementaryDiagram_closed_under_log_consequence {M : MiniFunctionRelation.S
 def isChain (S : Set MiniFunctionRelation.Structure) : Prop :=
   ∀ (M N : MiniFunctionRelation.Structure), M ∈ S → N ∈ S → (M ≺ N ∨ N ≺ M)
 
-def chainUnion (S : Set MiniFunctionRelation.Structure) : MiniFunctionRelation.Structure := by
-  -- The union of a chain is a structure whose domain is the union of domains
-  -- This is not generally possible in Lean without disjoint union types
-  -- We provide a construction placeholder
-  exact {
-    domain := Unit
-    predInterp := λ _ _ => False
-    constInterp := λ _ => ()
-  }
+-- The union of an elementary chain of structures. Proper construction requires
+-- a directed system with compatible embeddings. We provide the concept via an axiom.
+axiom chainUnion (S : Set MiniFunctionRelation.Structure) : MiniFunctionRelation.Structure
 
 def unionOfChainProperty : String :=
   "The union of a chain of structures is a structure that extends each structure in the chain."

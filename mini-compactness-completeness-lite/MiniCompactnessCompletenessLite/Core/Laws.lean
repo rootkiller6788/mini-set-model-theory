@@ -69,8 +69,11 @@ lemma compactness_for_sentence (φ : MiniLogicKernel.PredFormula)
 
 /-! ## Completeness Theorem (Godel 1930) -/
 
+-- Godel's completeness theorem: semantic consequence implies syntactic provability.
+-- Since we do not formalize a proof system here, we state the equivalence as:
+-- "T ⊨ φ iff T is inconsistent with ¬φ" (the model-existence form of completeness).
 axiom completeness (T : Theory) (φ : MiniLogicKernel.PredFormula) :
-  logicalConsequence T φ → True
+  logicalConsequence T φ ↔ unsatisfiable (theoryInsert T (MiniLogicKernel.PredFormula.not φ))
 
 axiom adequacy (T : Theory) (φ : MiniLogicKernel.PredFormula) :
   (∀ M, isModelOf M T → isModelOf M {φ}) → logicalConsequence T φ
@@ -103,20 +106,24 @@ lemma completeness_consistency (T : Theory) (φ : MiniLogicKernel.PredFormula)
 
 /-! ## Downward Lowenheim-Skolem Theorem -/
 
+-- Every structure has a countable elementary substructure.
 axiom downwardLowenheimSkolem (M : MiniFunctionRelation.Structure) :
-  ∃ (N : MiniFunctionRelation.Structure), True
+  ∃ (N : MiniFunctionRelation.Structure), N ≺ M ∧ Countable N.domain
 
 /-! ## Upward Lowenheim-Skolem Theorem -/
 
+-- Every infinite structure has arbitrarily large elementary extensions.
+-- Here we state: for any infinite M and any infinite cardinal κ ≥ |M|, there exists N ≻ M of size κ.
+-- Since we lack cardinal infrastructure, we state a simplified version:
 axiom upwardLowenheimSkolem (M : MiniFunctionRelation.Structure) :
-  ∀ (κ : String), True
+  (∃ (x y : M.domain), x ≠ y) → ∃ (N : MiniFunctionRelation.Structure), M ≺ N ∧ ¬ ∃ (f : N.domain → M.domain), Function.Injective f
 
 /-! ## Consequences of Compactness + LS -/
 
-lemma infinite_models_exist (T : Theory) (hSat : satisfiable T)
-    (hInfiniteModels : ∀ n : Nat, ∃ (M : MiniFunctionRelation.Structure), isModelOf M T) : True := by
+lemma infinite_models_exist (T : Theory) (hInfiniteModels : ∀ n : Nat, ∃ (M : MiniFunctionRelation.Structure), isModelOf M T ∧ Finite M.domain ∧ ∃ (f : Fin n → M.domain), Function.Injective f) :
+    ∃ (M : MiniFunctionRelation.Structure), isModelOf M T ∧ Infinite M.domain := by
   -- If T has arbitrarily large finite models, it has an infinite model (by compactness)
-  trivial
+  sorry
 
 lemma nonStandardModelsExist (T : Theory) (hSat : satisfiable T)
     (hInfinite : ∃ (M : MiniFunctionRelation.Structure), isModelOf M T) : String :=
@@ -128,11 +135,15 @@ lemma nonStandardModelsExist (T : Theory) (hSat : satisfiable T)
 
 lemma notFinitelyAxiomatizable_of_arbitrarilyLargeFiniteModels
     (φ : MiniLogicKernel.PredFormula)
-    (h : ∀ n : Nat, ∃ (M : MiniFunctionRelation.Structure),
+    (h : ∀ n : Nat, ∃ (M : MiniFunctionRelation.Structure), Finite M.domain ∧
       MiniLogicKernel.Structure.satisfies (domain := M.domain)
-        (predInterp := M.predInterp) (constInterp := M.constInterp) φ []) : True := by
-  -- The class of finite structures is not axiomatizable by a single sentence
-  trivial
+        (predInterp := M.predInterp) (constInterp := M.constInterp) φ []) :
+    ∃ (M : MiniFunctionRelation.Structure), Infinite M.domain ∧
+      MiniLogicKernel.Structure.satisfies (domain := M.domain)
+        (predInterp := M.predInterp) (constInterp := M.constInterp) φ [] := by
+  -- The class of finite structures is not axiomatizable by a single sentence:
+  -- if φ has arbitrarily large finite models, by compactness φ has an infinite model.
+  sorry
 
 /-! ## Vaught's Test -/
 
@@ -140,35 +151,55 @@ def vaughtsTest (T : Theory) : Prop :=
   isConsistent T ∧
   (∀ (M N : MiniFunctionRelation.Structure), isModelOf M T → isModelOf N T → M ≡ₑ N)
 
-lemma vaughtsTest_implies_complete (T : Theory) (hVaught : vaughtsTest T) : isComplete T :=
-  λ φ => by
-    have hCons := hVaught.1
-    have hCat := hVaught.2
-    rcases hCons with ⟨M, hM⟩
-    have hSatM : MiniLogicKernel.Structure.satisfies (domain := M.domain)
-      (predInterp := M.predInterp) (constInterp := M.constInterp) φ [] := by
-      trivial
-    refine Or.inl (λ N hN => ?_)
+lemma vaughtsTest_implies_complete (T : Theory) (hVaught : vaughtsTest T) : isComplete T := by
+  intro φ
+  have hCons := hVaught.1
+  have hCat := hVaught.2
+  rcases hCons with ⟨M, hM⟩
+  by_cases hSatM : MiniLogicKernel.Structure.satisfies (domain := M.domain)
+    (predInterp := M.predInterp) (constInterp := M.constInterp) φ []
+  · refine Or.inl (λ N hN => ?_)
     have hEq := hCat M N hM hN
     exact ((hEq φ).mpr hSatM)
+  · refine Or.inr (λ N hN => ?_)
+    have hEq := hCat M N hM hN
+    have hNNotφ : MiniLogicKernel.Structure.satisfies (domain := N.domain)
+      (predInterp := N.predInterp) (constInterp := N.constInterp)
+      (MiniLogicKernel.PredFormula.not φ) [] := by
+      simp [MiniLogicKernel.Structure.satisfies]
+      intro hNφ
+      apply hSatM
+      exact ((hEq φ).mp hNφ)
+    exact hNNotφ
 
 /-! ## Lindstrom's Theorem -/
 
-axiom lindstromMaximality : String
+-- Lindstrom's theorem: first-order logic is the maximal logic (up to expressive equivalence)
+-- that satisfies the compactness theorem and the downward Lowenheim-Skolem theorem.
+-- Formalizing this requires a notion of "abstract logic", which we do not have here.
+-- We state the existence as an axiom.
+axiom lindstromMaximality : True
 
 def lindstromStatement : String :=
   "First-order logic is the maximal logic (up to expressive equivalence) that satisfies the compactness theorem and the downward Lowenheim-Skolem theorem."
 
 /-! ## Joint Consistency / Interpolation -/
 
-axiom craigInterpolation (φ ψ : MiniLogicKernel.PredFormula) : True
+-- Craig interpolation: if ⊨ φ → ψ, there exists an interpolant θ in the common language
+-- such that ⊨ φ → θ and ⊨ θ → ψ.
+-- Proper formalization requires a notion of "common language" (shared non-logical symbols).
+axiom craigInterpolation (φ ψ : MiniLogicKernel.PredFormula) :
+  logicallyImplies φ ψ → ∃ (θ : MiniLogicKernel.PredFormula), logicallyImplies φ θ ∧ logicallyImplies θ ψ
 
 def craigInterpolationStatement : String :=
   "If ⊨ φ → ψ, there exists an interpolant θ in the common language such that ⊨ φ → θ and ⊨ θ → ψ."
 
 /-! ## Beth Definability -/
 
-axiom bethDefinability : String
+-- Beth definability: a predicate is implicitly definable in a theory iff it is explicitly definable.
+-- Proper formalization requires the ability to vary the language/signature.
+axiom bethDefinability (T : Theory) (P : Nat) :
+  True
 
 def bethDefinabilityStatement : String :=
   "A predicate is implicitly definable in a theory iff it is explicitly definable."

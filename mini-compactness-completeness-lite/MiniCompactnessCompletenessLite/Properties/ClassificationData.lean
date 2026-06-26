@@ -35,20 +35,37 @@ instance : ToString StabilitySpectrum where
 
 /-! ## Stability of a Theory -/
 
+-- These functions classify a theory into the stability hierarchy.
+-- Proper definitions require counting types over parameter sets.
+-- TODO: Formalize with type space cardinality infrastructure.
+
 def stabilityClass (T : Theory) : StabilitySpectrum :=
   StabilitySpectrum.stable
 
+-- T is stable if over every model M, |S₁(M)| ≤ |M|.
+-- Here we use an axiom placeholder.
+axiom isStable_axiom (T : Theory) : Prop
+
 def isStable (T : Theory) : Prop :=
-  True
+  isStable_axiom T
+
+-- T is superstable if stable and no formula has the order property with forking chains.
+axiom isSuperstable_axiom (T : Theory) : Prop
 
 def isSuperstable (T : Theory) : Prop :=
-  True
+  isSuperstable_axiom T
+
+-- T is ω-stable if S₁(A) is countable for every countable A.
+axiom isOmegaStable_axiom (T : Theory) : Prop
 
 def isOmegaStable (T : Theory) : Prop :=
-  True
+  isOmegaStable_axiom T
+
+-- T is totally transcendental if Morley rank is ordinal-valued on all formulas.
+axiom isTotallyTranscendental_axiom (T : Theory) : Prop
 
 def isTotallyTranscendental (T : Theory) : Prop :=
-  True
+  isTotallyTranscendental_axiom T
 
 /-! ## Spectrum Function -/
 

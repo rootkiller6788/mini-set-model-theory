@@ -20,7 +20,7 @@ structure SetFunction (α β : Type u) where
 /-! ## Identity and Composition -/
 
 def SetFunction.id (α : Type u) : SetFunction α α where
-  mapping := id
+  mapping := λ a => a
   domain := emptySet α
 
 def SetFunction.comp {α β γ : Type u}
@@ -40,16 +40,16 @@ structure SetHom (α β : Type u) where
   preserves_union : ∀ s t, map (union s t) = union (map s) (map t)
 
 def SetHom.id (α : Type u) : SetHom α α where
-  map := id
+  map s := s
   preserves_empty := rfl
   preserves_union := fun _ _ => rfl
 
 def SetHom.comp {α β γ : Type u} (g : SetHom β γ) (f : SetHom α β) : SetHom α γ where
   map := g.map ∘ f.map
   preserves_empty := by
-    rw [f.preserves_empty, g.preserves_empty]
+    simp [f.preserves_empty, g.preserves_empty, Function.comp_apply]
   preserves_union := fun s t => by
-    rw [f.preserves_union, g.preserves_union]
+    simp [f.preserves_union, g.preserves_union, Function.comp_apply]
 
 /-! ## Monic and Epic Maps -/
 
@@ -102,10 +102,8 @@ def constEmptyHom : SetHom Nat Nat where
   preserves_empty := rfl
   preserves_union := by
     intro s t; apply subset_extensional
-    intro x; apply Iff.intro
-    · intro h; exfalso; exact h
-    · intro h; exfalso; exact h
+    intro x; simp [union, emptySet]
 
-#eval identityHom.map (singleton 1 : Set Nat) 1
+#check identityHom.map (singleton 1 : Set Nat) 1
 
 end MiniSetCore

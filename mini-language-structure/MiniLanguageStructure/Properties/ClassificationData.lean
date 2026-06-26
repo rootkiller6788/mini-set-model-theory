@@ -126,7 +126,7 @@ def functionalLanguageData (L : Language) : FunctionalLanguageData where
 /-- The language classification hierarchy establishes a natural
     complexity ordering on first-order languages:
     Empty ⊂ Propositional ⊂ Unary ⊂ Monadic ⊂ Relational ⊂ Finite ⊂ Countable ⊂ All -/
-theorem languageClassificationHierarchy : List (String × LanguageClass) := [
+def languageClassificationHierarchy : List (String × LanguageClass) := [
   ("Empty", LanguageClass.empty),
   ("Propositional", LanguageClass.propositional),
   ("Finite Relational", LanguageClass.finiteRelational),
@@ -137,19 +137,12 @@ theorem languageClassificationHierarchy : List (String × LanguageClass) := [
   ("Functional", LanguageClass.functional)
 ]
 
-/-- Classification determines expressive power: the classification of
-    a language predicts which model-theoretic phenomena are possible.
-    For example, only languages with at least one binary relation can
-    express transitivity, which is needed for orderings and graphs. -/
-theorem classificationDeterminesExpressivity : String :=
-  "Language classification determines expressive power: unary languages cannot express transitivity or connectedness; binary relations are the first level where interesting structures appear."
-
 /-- The language class determines decidability:
     - Empty/Propositional: Trivially decidable
     - Monadic (unary): Decidable (Lowenheim 1915)
     - Finite Relational with binary: Often undecidable
     - Finite General: Usually undecidable -/
-theorem decidabilityByClass : List (LanguageClass × String) := [
+def decidabilityByClass : List (LanguageClass × String) := [
   (LanguageClass.empty, "Trivially decidable"),
   (LanguageClass.propositional, "Decidable (propositional logic)"),
   (LanguageClass.finiteRelational, "Decidable for monadic, undecidable for binary+"),
@@ -158,42 +151,27 @@ theorem decidabilityByClass : List (LanguageClass × String) := [
   (LanguageClass.finiteGeneral, "Typically undecidable")
 ]
 
-/-! ## Spectrum and Classification -/
+/-! ## Shelah's Classification Program -/
 
-/-- The spectrum of a language class: the set of possible cardinalities
-    of finite models. For propositional languages, the spectrum is
-    finite. For relational languages with at least binary relations,
-    the spectrum includes all sufficiently large integers. -/
-theorem spectrumOfLanguageClasses : True := trivial
+/-- Shelah's classification program divides first-order theories into
+    stability classes, each with distinct structural properties. -/
+inductive StabilityClass
+  | omegaStable
+  | superstable
+  | stable
+  | simple
+  | NIP
+  | wild
+  deriving Repr
 
-/-- The finite model property (FMP): a theory has FMP if every satisfiable
-    formula has a finite model. The FMP implies decidability for finitely
-    axiomatizable theories. -/
-theorem finiteModelProperty : String :=
-  "A theory T has the finite model property (FMP) if every satisfiable T-consequence has a finite model. FMP + finite axiomatizability → decidability."
+/-- Example: ACF (algebraically closed fields) is ω-stable. -/
+def acf_is_omegaStable : StabilityClass := StabilityClass.omegaStable
 
-/-- Languages classified by their "model-theoretic complexity":
-    - Class 0: Strongly minimal / O-minimal (tame geometry)
-    - Class 1: Stable theories (well-behaved independence notion)
-    - Class 2: Simple theories (independence but weaker)
-    - Class 3: NIP theories (no independence property)
-    - Class 4: All theories (full complexity) -/
-theorem shelahsClassificationProgram : List (Nat × String × String) := [
-  (0, "ω-stable", "Morley rank < ∞. Examples: ACF, DCF₀, modules."),
-  (1, "Superstable", "Every type does not fork over a finite set."),
-  (2, "Stable", "No order property. Independence = non-forking."),
-  (3, "Simple", "Independence = non-dividing. Examples: random graph, ACFA."),
-  (4, "NIP", "No independence property. Examples: RCF, (Q, <), algebraically closed valued fields."),
-  (5, "All", "Full complexity. Examples: arithmetic (N, +, ×), set theory.")
-]
+/-- Example: The random graph is simple but not stable. -/
+def randomGraph_is_simple : StabilityClass := StabilityClass.simple
 
-/-- For each language class, Shelah's classification theory determines:
-    - Number of models in each cardinal (spectrum function)
-    - Existence of prime/saturated models
-    - Structure of definable sets (geometric properties)
-    - Behavior of forking independence -/
-theorem shelahClassificationConsequences : String :=
-  "Shelah's classification theory (1970s-present) shows that theories divide into a small number of classes, each with distinct structural properties governing the number of models, definable sets, and independence relations."
+/-- Example: (N, +, ×) is wild (full arithmetic complexity). -/
+def arithmetic_is_wild : StabilityClass := StabilityClass.wild
 
 /-! ## #eval examples -/
 
@@ -241,11 +219,8 @@ def pointLang : Language := Language.ofSignature pointSig
 
 -- Shelah classification
 #eval "── Shelah's Classification Program ──"
-#eval shelahsClassificationProgram
-#eval shelahClassificationConsequences
-
--- Expressivity
-#eval classificationDeterminesExpressivity
-#eval finiteModelProperty
+#eval acf_is_omegaStable
+#eval randomGraph_is_simple
+#eval arithmetic_is_wild
 
 end MiniLanguageStructure

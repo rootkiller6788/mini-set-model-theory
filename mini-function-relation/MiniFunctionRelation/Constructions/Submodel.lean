@@ -14,7 +14,6 @@ and the interpretations agree on the subdomain.
 structure Submodel (N : Structure) where
   carrier : Set N.domain
   closedUnderConst : ∀ (c : Nat), N.constInterp c ∈ carrier
-  isSubmodel : True
 
 def Submodel.toStructure {N : Structure} (S : Submodel N) : Structure where
   domain := Subtype S.carrier
@@ -34,23 +33,20 @@ def Submodel.inclusionEmbedding {N : Structure} (S : Submodel N) : Embedding (S.
 def Submodel.generatedBy {N : Structure} (gen : Set N.domain) : Submodel N where
   carrier := {x | ∃ (c : Nat), N.constInterp c = x} ∪ gen
   closedUnderConst c := Or.inl ⟨c, rfl⟩
-  isSubmodel := ⟨⟩
 
 -- A substructure is elementary if it satisfies the same first-order sentences
-structure ElementarySubmodel (N : Structure) extends Submodel N where
-  elementary : True
+-- TODO: formalize the Tarski-Vaught condition
+abbrev ElementarySubmodel (N : Structure) := Submodel N
 
 -- Trivial submodel: just the constants
 def Submodel.trivial (N : Structure) : Submodel N where
   carrier := {x | ∃ (c : Nat), x = N.constInterp c}
   closedUnderConst c := ⟨c, rfl⟩
-  isSubmodel := ⟨⟩
 
 -- Full submodel: the whole structure
 def Submodel.full (N : Structure) : Submodel N where
   carrier := Set.univ
   closedUnderConst c := Set.mem_univ _
-  isSubmodel := ⟨⟩
 
 def Submodel.fullIso (N : Structure) : Iso (Submodel.full N).toStructure N where
   toHom := (Submodel.full N).inclusion
@@ -84,7 +80,6 @@ def Sub10 : Submodel TestStruct where
   closedUnderConst c := by
     simp [TestStruct]
     exact Nat.zero_le _
-  isSubmodel := ⟨⟩
 
 #eval (Sub10.toStructure).constInterp 0
 #eval ((Submodel.inclusion Sub10).map ⟨5, by decide⟩)

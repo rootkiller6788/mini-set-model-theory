@@ -27,9 +27,11 @@ def Language.hasConst (L : Language) (c : Nat) : Bool :=
 def Language.hasPred (L : Language) (p : Nat) : Bool :=
   (L.predArity p).isSome
 
--- A structure interprets a language
+-- A structure interprets a language if it provides interpretations
+-- for all symbols declared in the language.
+-- TODO: formalize arity-checking for predicate and constant symbols
 def Structure.interprets (M : Structure) (L : Language) : Prop :=
-  True
+  sorry
 
 -- The language of equality (only = as a logical symbol)
 def EqualityLanguage : Language where
@@ -54,7 +56,8 @@ def GroupLanguage : Language :=
   ((emptyLanguage.addPred 0 2).addConst 0 0).addPred 1 1
 
 -- Every structure trivially interprets the empty language
-theorem anyStruct_interprets_empty (M : Structure) : Structure.interprets M emptyLanguage := ⟨⟩
+theorem anyStruct_interprets_empty (M : Structure) : Structure.interprets M emptyLanguage :=
+  sorry
 
 -- Concrete test
 def MyStruct : Structure where

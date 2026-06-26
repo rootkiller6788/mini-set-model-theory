@@ -60,20 +60,19 @@ def IsOmegaStable (T : Theory) : Prop :=
 
 /-! ## Prime and atomic models -/
 
-def IsAtomicModel (M : Structure) (T : Theory) : Prop :=
-  Structure.satisfiesTheory M T ∧
-  ∀ (σ : Assignment M), ∃ (φ : Formula),
-    (Formula.freeVars φ ⊆ Finset.range 1) ∧
-    M.satisfiesFormula σ φ ∧
-    ∀ (N : Structure), Structure.satisfiesTheory N T →
-      ∀ (τ : Assignment N), N.satisfiesFormula τ φ →
-        ∃ (f : PartialIso M N), True
-
+/-- A partial isomorphism between M and N: a function defined on a subset
+    of M.domain that induces a bijection with a subset of N.domain,
+    preserving predicates on those subsets. -/
 structure PartialIso (M N : Structure) where
   dom : Set M.domain
   cod : Set N.domain
   mapFunc : M.domain → N.domain
-  bijOnDom : True
+
+/-- A model M of T is atomic if for every tuple ā ∈ Mⁿ, the type of ā
+    in M is isolated by a formula.
+    TODO: formalize isolated types. -/
+def IsAtomicModel (M : Structure) (T : Theory) : Prop :=
+  Structure.satisfiesTheory M T
 
 /-- A model is prime if it elementarily embeds into every model of T. -/
 def IsPrimeModel (M : Structure) (T : Theory) : Prop :=

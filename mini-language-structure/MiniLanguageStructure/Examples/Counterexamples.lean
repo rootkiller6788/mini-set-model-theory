@@ -18,83 +18,46 @@ import MiniLanguageStructure.Examples.Standard
 
 namespace MiniLanguageStructure
 
-/-! ## Non-Definable Relations -/
+/-! ## Non-Definability Results in First-Order Logic -/
 
-/-- The well-ordering property is not first-order definable in the
-    language of orders. No set of first-order sentences can express
-    "every nonempty subset has a least element." -/
-def nonDefinableWellOrder : String :=
-  "Well-ordering (every nonempty subset has a least element) is not first-order definable in {≤}. Proof: compactness + arbitrarily large finite linear orders that are well-ordered, but their ultraproduct contains a non-well-ordered component."
-
-/-- Finiteness is not first-order definable. There is no set of first-order
-    sentences that is true exactly of finite structures. -/
-def nonDefinableFiniteness : String :=
-  "Finiteness is not first-order definable. If it were, compactness would yield an infinite model of the axioms of finiteness — contradiction."
-
-/-- Connectedness of graphs is not first-order definable. -/
-def nonDefinableConnectedness : String :=
-  "Graph connectedness is not first-order definable in the language of graphs. Proof: take two disjoint infinite complete graphs; they are elementarily equivalent to a single connected graph."
-
-/-- Torsion in groups is not first-order definable. -/
-def nonDefinableTorsion : String :=
-  "The class of torsion groups is not first-order axiomatizable. Ultraproducts of finite cyclic groups of increasing order contain elements of infinite order."
+-- Well-ordering is NOT first-order definable in {≤}. (Compactness argument)
+-- Finiteness is NOT first-order definable.
+-- Graph connectedness is NOT first-order definable.
+-- The class of torsion groups is NOT first-order axiomatizable.
 
 /-! ## Essential Undecidability -/
 
-/-- Robinson arithmetic Q is essentially undecidable: every consistent
-    extension of Q (in the same language) is undecidable. -/
-def robinsonArithmetic : String :=
-  "Robinson's Q: a finitely axiomatizable, essentially undecidable theory in the language of arithmetic."
+-- Robinson's Q: finitely axiomatizable, essentially undecidable theory of
+--   arithmetic.  Every consistent extension of Q is undecidable.
+-- Group theory is undecidable but NOT essentially undecidable
+--   (the theory of abelian groups is a decidable extension).
+-- The class of finite groups is not an elementary class (compactness/ultraproducts).
 
-/-- An essentially undecidable theory: the theory of groups is NOT essentially
-    undecidable (it has decidable extensions like abelian groups). But the
-    theory of graphs IS undecidable but not essentially so. -/
-def groupTheoryNotEssentiallyUndecidable : String :=
-  "The theory of groups has a decidable extension (e.g., theory of abelian groups is decidable). Thus group theory is undecidable but not essentially undecidable."
+/-! ## Tarski's Undefinability Theorem -/
 
-/-- The class of finite groups is not first-order axiomatizable
-    (by compactness: if it were, an ultraproduct of finite groups of
-    unbounded size would be an infinite group satisfying the axioms). -/
-def finiteGroupsNotAxiomatizable : String :=
-  "The class of finite groups is not elementary (not first-order axiomatizable). Proof via compactness / ultraproducts."
-
-/-- Tarski's undefinability theorem: truth (in the standard model of arithmetic)
-    cannot be defined by a first-order formula in the language of arithmetic. -/
-def tarskiUndefinability : String :=
-  "Truth in the standard model N is not definable by any first-order formula in the language of arithmetic."
+-- Truth in the standard model (N, +, ×) is not definable by any first-order
+--   formula in the language of arithmetic.
 
 /-! ## Language Limitations -/
 
-/-- In a purely relational language, there is no way to force the domain
-    to be infinite without using infinitely many sentences. -/
-def infinityInRelationalLanguage : String :=
-  "In a finite relational language, 'the domain is infinite' requires infinitely many axioms (one for each n: 'there are at least n elements')."
-
-/-- The Lowenheim-Skolem theorem implies no first-order theory with infinite
-    models is categorical in all infinite powers. -/
-def nonCategoricalInfinite : String :=
-  "No theory with an infinite model can be categorical in all infinite cardinalities (by upward LS)."
-
-/-- A language with only unary predicates is very weak: it cannot express
-    transitivity, connectedness, or any binary relation. -/
-def weaknessOfUnaryLanguage : String :=
-  "A language with only unary predicates cannot define any binary relation. Its definable sets are Boolean combinations of the unary predicates."
+-- In a finite relational language, "the domain is infinite" requires infinitely
+--   many axioms.  No FOL theory with infinite models is categorical in all
+--   infinite cardinalities (by upward LS).  Unary-only languages cannot express
+--   transitivity, connectedness, or any binary relation.
 
 /-! ## #eval examples -/
 
 #eval "══ Counterexamples ══"
 
--- Non-definability
-#eval nonDefinableWellOrder
-#eval nonDefinableFiniteness
-#eval nonDefinableConnectedness
+#eval "── Non-definability ──"
+#eval "Well-ordering, finiteness, graph connectedness are not FOL-definable."
+#eval "Torsion groups are not elementary."
 
--- Essential undecidability
-#eval robinsonArithmetic
-#eval groupTheoryNotEssentiallyUndecidable
-#eval finiteGroupsNotAxiomatizable
+#eval "── Essential Undecidability ──"
+#eval "Robinson Q is essentially undecidable. Group theory is undecidable but not essentially so."
+#eval "Tarski: truth in (N,+,×) is not arithmetically definable."
 
--- Language limitations
-#eval weaknessOfUnaryLanguage
+#eval "── Language Limitations ──"
+#eval "Unary languages: only Boolean combinations of predicates."
 
 end MiniLanguageStructure

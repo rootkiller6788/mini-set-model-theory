@@ -385,9 +385,10 @@ end CardinalBounds
 
 section WellOrdering
 
-/-- Every set can be well-ordered. In Lean, this corresponds to having an ordinal in bijection.
-For cardinal theory: every cardinal is an aleph. -/
-def wellOrderingTheorem : Prop :=
+/-- The Well-Ordering Principle: Every set can be well-ordered. Equivalent to the Axiom of Choice.
+In our cardinal theory: every cardinal is an aleph. Note: renamed from wellOrderingTheorem
+to avoid conflict with OrdinalTheory's wellOrderingTheorem about order types. -/
+def wellOrderingPrinciple : Prop :=
   ∀ (κ : Cardinal), ∃ (α : Ordinal), Cardinal.eq κ (Cardinal.alephZero) -- simplified
 
 /-- The Hartogs number: for any cardinal κ, there is a least ordinal not dominated by κ.

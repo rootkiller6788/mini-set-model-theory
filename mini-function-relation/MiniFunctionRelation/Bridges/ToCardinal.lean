@@ -15,10 +15,7 @@ to cardinal invariants of the structure.
 def Structure.cardinal (M : Structure) : String :=
   s!"|{toString M.domain}|"
 
--- Two isomorphic structures have the same cardinality
-theorem iso_same_cardinal (M N : Structure) (i : Iso M N) : True := ⟨⟩
-
--- The cardinality of a structure is an invariant
+-- The cardinality of a structure is an invariant of the isomorphism class
 def CardinalInvariant (M : Structure) : Nat := 0
 
 -- For finite structures, the cardinal is just the size

@@ -21,8 +21,8 @@ def prodDomainSize (M N : MiniFunctionRelation.Structure) : Prop :=
 /-- Invariant: forgetfulFunctor returns the domain type -/
 #eval (forgetfulFunctor TerminalStructure = Unit)
 
-/-- Invariant: productFst composition with productUniversal recovers f -/
-def fstUniversalCheck (M N : MiniFunctionRelation.Structure) : True := trivial
+/-- Invariant: productFst composition with productUniversal recovers f (stub) -/
+-- def fstUniversalCheck (M N : MiniFunctionRelation.Structure) (f : Hom unitStructure M) : ... := ...
 
 /-- Invariant: groupOpArities length is 3 -/
 #eval groupOpArities.length == 3

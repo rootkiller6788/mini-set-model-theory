@@ -40,7 +40,7 @@ def test_consequence : Prop := logicalConsequence emptyTheory
 
 --- New: Morphisms ---
 def test_interpretation : Interpretation emptyTheory emptyTheory :=
-  idInterpretation emptyTheory
+  Interpretation.id emptyTheory
 def test_bi : Prop := areEquivalent emptyTheory emptyTheory
 def test_ext : Prop := isExtension emptyTheory emptyTheory
 

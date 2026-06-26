@@ -13,41 +13,46 @@ namespace MiniCompactnessCompletenessLite
 
 /-! ## Universal Theory -/
 
-def isUniversalTheory (T : Theory) : Prop :=
-  True
-
+-- A theory T is universal if it has a set of universal axioms.
+-- A universal sentence is one of the form ∀x̄. ψ where ψ is quantifier-free.
+-- Proper formalization requires parsing the quantifier prefix of a formula.
 def isUniversalSentence (φ : MiniLogicKernel.PredFormula) : Bool :=
   match φ with
   | .all _ => true
   | .not (.ex _) => true
   | _ => false
 
+def isUniversalTheory (T : Theory) : Prop :=
+  ∃ (T' : Theory), (∀ φ ∈ T', isUniversalSentence φ) ∧ areLogicallyEquivalentTheories T T'
+
 def universalTheoryStatement : String :=
   "A theory T is universal if it has a set of universal axioms."
 
 /-! ## Existential Theory -/
 
-def isExistentialTheory (T : Theory) : Prop :=
-  True
-
+-- An existential sentence is one of the form ∃x̄. ψ where ψ is quantifier-free.
 def isExistentialSentence (φ : MiniLogicKernel.PredFormula) : Bool :=
   match φ with
   | .ex _ => true
   | .not (.all _) => true
   | _ => false
 
+def isExistentialTheory (T : Theory) : Prop :=
+  ∃ (T' : Theory), (∀ φ ∈ T', isExistentialSentence φ) ∧ areLogicallyEquivalentTheories T T'
+
 def existentialTheoryStatement : String :=
   "A theory T is existential if it has a set of existential axioms."
 
 /-! ## ∀∃ Theory (Inductive Theory) -/
 
-def isInductiveTheory (T : Theory) : Prop :=
-  True
-
+-- A ∀∃ (AE) sentence is one of the form ∀x̄.∃ȳ. ψ where ψ is quantifier-free.
 def isAESentence (φ : MiniLogicKernel.PredFormula) : Bool :=
   match φ with
   | .all (.ex _) => true
   | _ => false
+
+def isInductiveTheory (T : Theory) : Prop :=
+  ∃ (T' : Theory), (∀ φ ∈ T', isAESentence φ) ∧ areLogicallyEquivalentTheories T T'
 
 def inductiveTheoryStatement : String :=
   "T is ∀∃-axiomatizable iff T is preserved under unions of chains (Chang-Los-Suszko)."

@@ -56,40 +56,17 @@ theorem relationalPreservedUnderRelExpansion (L L' : Language) (hexp : isLanguag
 
 /-! ## Preservation Under Substructures and Homomorphisms -/
 
-/-- A formula property is preserved under substructures if whenever
-    N is a substructure of M and the formula holds in M, it holds in N. -/
-def preservedUnderSubstructure (formulaProperty : String) : Prop := True
+-- TODO: Formalize preservation theorems (quantifier-free preserved under substructures,
+-- positive preserved under homomorphisms, universal preserved under substructures).
+-- This requires a proper formula/sentence type and a satisfaction relation.
 
-/-- Quantifier-free formulas are preserved under substructures:
-    if M ⊨ φ(a) for QF φ, and N is a substructure of M, then N ⊨ φ(a). -/
-theorem quantifierFreePreservedUnderSubstructures
-    (L : Language) (φ : String) (hqf : FormulaShape.isQuantifierFree FormulaShape.quantifierFree) : Prop := True
+/-- Los-Tarski Theorem: A theory is preserved under substructures iff it is
+    equivalent to a set of universal sentences. -/
+-- theorem losTarskiTheorem : ... := ...
 
-/-- Positive formulas are preserved under homomorphisms:
-    if M ⊨ φ(a) for positive φ, and f : M → N is a homomorphism, then N ⊨ φ(f(a)). -/
-theorem positiveFormulasPreservedUnderHomomorphisms
-    (L : Language) (φ : String) (hpos : FormulaShape.isPositive FormulaShape.positive) : Prop := True
-
-/-- Universal formulas are preserved under substructures.
-    If ∀x φ(x) holds in M and N ≤ M, then ∀x φ(x) holds in N. -/
-theorem universalPreservedUnderSubstructures (L : Language) : Prop := True
-
-/-- Existential formulas are preserved under superstructures (extensions):
-    if ∃x φ(x) holds in N and N ≤ M, then ∃x φ(x) holds in M. -/
-theorem existentialPreservedUnderExtensions (L : Language) : Prop := True
-
-/-- Los-Tarski Theorem: A theory T is preserved under substructures if and only if
-    T is equivalent to a set of universal sentences. This is a fundamental
-    result connecting syntax (universal formulas) to semantics (substructure preservation). -/
-theorem losTarskiTheorem (L : Language) (T : String) : Prop :=
-  -- T preserved under substructures ↔ T ≡ some universal theory
-  True
-
-/-- Lyndon's Positivity Theorem: A theory T is preserved under homomorphisms
-    if and only if T is equivalent to a set of positive sentences. -/
-theorem lyndonPositivityTheorem (L : Language) (T : String) : Prop :=
-  -- T preserved under homomorphisms ↔ T ≡ some positive theory
-  True
+/-- Lyndon's Positivity Theorem: A theory is preserved under homomorphic images
+    iff it is equivalent to a set of positive sentences. -/
+-- theorem lyndonPositivityTheorem : ... := ...
 
 /-! ## Preservation by Formula Shape -/
 

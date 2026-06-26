@@ -1,5 +1,6 @@
 ﻿import MiniFunctionRelation.Core.Basic
 import MiniFunctionRelation.Core.Syntax
+import MiniFunctionRelation.Properties.PreservationTheorem
 
 namespace MiniFunctionRelation
 
@@ -66,11 +67,11 @@ def IsMinimal (M : Structure) : Prop :=
 
 /-! ## Quantifier elimination (structural) -/
 
-/-- A theory admits quantifier elimination if every formula is equivalent to
-    a quantifier-free formula modulo T. -/
+/-- A theory T admits quantifier elimination if every formula is T-equivalent
+    to a quantifier-free formula. -/
 def Theory.admitsQE (T : Theory) : Prop :=
   ∀ (φ : Formula), ∃ (ψ : Formula),
-    (∀ (v : Nat), Formula.all v (Formula.bot) = ψ) ∨ True ∧
+    (QuantifierFree ψ) ∧
     (∀ (M : Structure), Structure.satisfiesTheory M T →
       ∀ (σ : Assignment M),
         M.satisfiesFormula σ φ ↔ M.satisfiesFormula σ ψ)
