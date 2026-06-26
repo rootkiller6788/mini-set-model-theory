@@ -1,0 +1,44 @@
+/-
+# Mini Compactness Completeness Lite
+
+A miniature formalization of compactness, completeness, and
+Lowenheim-Skolem theorems for first-order logic, plus the
+Shelah classification program.
+
+This is a "lite" package that states the key meta-theorems as
+axioms and builds the model-theoretic infrastructure around them.
+-/
+
+import MiniCompactnessCompletenessLite.Core.Basic
+import MiniCompactnessCompletenessLite.Core.Objects
+import MiniCompactnessCompletenessLite.Core.Laws
+import MiniCompactnessCompletenessLite.Theorems.Basic
+import MiniCompactnessCompletenessLite.Theorems.Classification
+import MiniCompactnessCompletenessLite.Theorems.Main
+import MiniCompactnessCompletenessLite.Theorems.UniversalProperties
+import MiniCompactnessCompletenessLite.Examples.Counterexamples
+import MiniCompactnessCompletenessLite.Examples.Standard
+import MiniCompactnessCompletenessLite.Bridges.ToTopology
+import MiniCompactnessCompletenessLite.Bridges.ToComputation
+import MiniCompactnessCompletenessLite.Bridges.ToAlgebra
+import MiniCompactnessCompletenessLite.Bridges.ToGeometry
+import MiniCompactnessCompletenessLite.Morphisms.ElementaryEmbedding
+import MiniCompactnessCompletenessLite.Morphisms.Isomorphism
+import MiniCompactnessCompletenessLite.Morphisms.Homomorphism
+import MiniCompactnessCompletenessLite.Morphisms.Hom
+import MiniCompactnessCompletenessLite.Morphisms.Iso
+import MiniCompactnessCompletenessLite.Morphisms.Equivalence
+import MiniCompactnessCompletenessLite.Constructions.Ultraproduct
+import MiniCompactnessCompletenessLite.Constructions.ElementaryExtension
+import MiniCompactnessCompletenessLite.Constructions.Diagram
+import MiniCompactnessCompletenessLite.Constructions.Saturation
+import MiniCompactnessCompletenessLite.Constructions.Subobjects
+import MiniCompactnessCompletenessLite.Constructions.Quotients
+import MiniCompactnessCompletenessLite.Constructions.Products
+import MiniCompactnessCompletenessLite.Constructions.Universal
+import MiniCompactnessCompletenessLite.Properties.Stability
+import MiniCompactnessCompletenessLite.Properties.Categoricity
+import MiniCompactnessCompletenessLite.Properties.OmittingTypes
+import MiniCompactnessCompletenessLite.Properties.Invariants
+import MiniCompactnessCompletenessLite.Properties.Preservation
+import MiniCompactnessCompletenessLite.Properties.ClassificationData

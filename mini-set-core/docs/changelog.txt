@@ -1,0 +1,14 @@
+MiniSetCore Changelog
+=====================
+
+v0.1.0 (2026-05-21)
+  - Initial standalone mini-package with full skeleton
+  - Core: Set type, membership, operations, FinSet, Object instance
+  - Morphisms: SetFunction, SetIso, CardinalEquivalence
+  - Constructions: cartesianProduct, stubs for Universal/Subobjects/Quotients
+  - Properties: stubs for Invariants/Preservation/ClassificationData
+  - Theorems: stubs for Basic/UniversalProperties/Classification/Main
+  - Examples: natSet, evenSet, primeSet, Counterexamples stub
+  - Bridges: stubs for ToAlgebra/ToTopology/ToGeometry/ToComputation
+  - Tests: Smoke, Examples, Regression
+  - Benchmarks: CoreCoverage, Princeton, Cambridge, Harvard, MIT, Oxford

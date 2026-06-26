@@ -1,0 +1,48 @@
+MiniSetCore Architecture
+======================
+
+Package: mini-set-core
+Library: MiniSetCore
+Namespace: MiniSetCore
+
+Dependencies:
+  - mini-object-kernel (Object typeclass)
+
+Core:
+  Basic.lean    -- Set α := α → Prop, mem, operations, FinSet
+  Objects.lean  -- Object instance, Element, Relation, Function
+  Laws.lean     -- Set-theoretic axioms (stub)
+
+Morphisms:
+  Hom.lean         -- SetFunction, identity, composition
+  Iso.lean         -- SetIso (isomorphism between set objects)
+  Equivalence.lean -- CardinalEquivalence
+
+Constructions:
+  Products.lean    -- Cartesian product
+  Universal.lean   -- Universal constructions (stub)
+  Subobjects.lean  -- Subset as subobject (stub)
+  Quotients.lean   -- Quotient sets (stub)
+
+Properties:
+  Invariants.lean         -- Cardinality etc. (stub)
+  Preservation.lean       -- Property preservation (stub)
+  ClassificationData.lean -- Classification data (stub)
+
+Theorems:
+  Basic.lean              -- Fundamental theorems (stub)
+  UniversalProperties.lean -- Universal mapping properties (stub)
+  Classification.lean      -- Classification results (stub)
+  Main.lean               -- Aggregated main results (stub)
+
+Examples:
+  Standard.lean        -- natSet, evenSet, primeSet
+  Counterexamples.lean -- Edge cases (stub)
+
+Bridges:
+  ToAlgebra.lean      -- Set theory to algebra
+  ToTopology.lean     -- Set theory to topology
+  ToGeometry.lean     -- Set theory to geometry
+  ToComputation.lean  -- Set theory to computation
+
+Total .lean modules: 23

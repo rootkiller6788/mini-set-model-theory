@@ -1,0 +1,20 @@
+MiniSetCore TODO
+================
+
+High Priority:
+[ ] Implement set-theoretic axioms (Laws.lean)
+[ ] Fill in subobject construction (Constructions/Subobjects.lean)
+[ ] Fill in quotient construction (Constructions/Quotients.lean)
+[ ] Prove basic set theorems (Theorems/Basic.lean)
+
+Medium Priority:
+[ ] Universal properties of product (Theorems/UniversalProperties.lean)
+[ ] Cardinality classification (Theorems/Classification.lean)
+[ ] Property invariants (Properties/Invariants.lean)
+[ ] Property preservation theorems (Properties/Preservation.lean)
+
+Low Priority:
+[ ] Bridge implementations (Bridges/To*.lean)
+[ ] Counterexamples library (Examples/Counterexamples.lean)
+[ ] Universal constructions (Constructions/Universal.lean)
+[ ] Classification data (Properties/ClassificationData.lean)
